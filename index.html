@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VPM Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="menu">☰</div>
+    <div class="logo">VPM</div>
+    <div class="score">Điểm: <span id="score">0</span></div>
+    <div class="speed">
+      <span class="dot selected">●</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+    </div>
+  </header>
+  <main>
+    <div id="contentBox">Chào mừng bạn đến với VPM</div>
+    <div id="sampleSentence" onclick="playSample()">Where are you from?</div>
+    <audio id="sampleAudio" src="audio/sample.mp3"></audio>
+    <div class="controls">
+      <button onclick="replayUserAudio()">🔁</button>
+      <button onclick="recordAudio()">🎤</button>
+      <button onclick="saveAudio()">💾</button>
+    </div>
+  </main>
+  <footer>
+    <a href="https://drive.google.com/file/d/18WXCZtCybZqUqdKjGVZh_kHaoinaqs1e/view?usp=drivesdk" target="_blank">
+      <button class="downloadBtn">📥 Tải giáo trình</button>
+    </a>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
