@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VPM</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">VPM</div>
+    <div class="score">85</div>
+    <div class="menu-icon" id="menuBtn">☰</div>
+  </header>
+  <main>
+    <textarea placeholder="Nhập hoặc dán nội dung cần luyện tập vào đây..."></textarea>
+  </main>
+  <footer>
+    <button class="icon" id="replay">🔁</button>
+    <button class="icon" id="mic">🎤</button>
+    <button class="icon" id="save">💾</button>
+  </footer>
+
+  <!-- Library modal -->
+  <div id="library" class="hidden">
+    <div class="library-content">
+      <button id="backBtn" class="back-btn">⬅️ Quay lại</button>
+      <h3>📚 Đã tải</h3>
+      <ul id="downloadedList"></ul>
+      <h3>☁️ Chưa tải</h3>
+      <ul id="availableList">
+        <li>
+          VPM - tiếng Anh 
+          <button class="download-btn" data-id="vpm-en">Tải về</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
