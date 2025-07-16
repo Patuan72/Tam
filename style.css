@@ -84,7 +84,7 @@ footer {
   font-size: 18px;
 }
 .dot {
-  margin: 0 8px;
+  margin: 0 4px;
   cursor: pointer;
 }
 .selected {

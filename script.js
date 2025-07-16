@@ -74,14 +74,9 @@ document.getElementById("menuBtn").addEventListener("click", () => {
   lib.classList.toggle("hidden");
 });
 
-
-
 // ===== 📘 Nội dung giáo trình mẫu =====
 const curriculumData = {
-  "vpm-en": "Hello! How are you today?
-I'm fine, thank you. And you?",
-  "vpm-fr": "Bonjour ! Comment ça va ?
-Très bien, merci."
+  "vpm-en": "Hello! How are you today?\nI'm fine, thank you. And you?"
 };
 
 // ===== 📥 Tải giáo trình và nạp vào textarea =====
@@ -90,29 +85,18 @@ document.addEventListener("click", function (e) {
     const item = e.target.parentElement;
     const id = e.target.dataset.id;
     const downloadedList = document.getElementById("downloadedList");
+    item.removeChild(e.target); // Xoá nút tải
+    downloadedList.appendChild(item); // Chuyển sang mục đã tải
 
-    // Xoá nút tải và chuyển mục
-    e.target.remove();
-    item.setAttribute("data-id", id);
-    downloadedList.appendChild(item);
-
+    // Nạp nội dung vào textarea
     if (curriculumData[id]) {
       document.querySelector("textarea").value = curriculumData[id];
       alert("Đã tải và nạp nội dung giáo trình vào màn hình học.");
     }
   }
-
-  // Bấm vào mục đã tải → nạp lại nội dung
-  if (e.target && e.target.parentElement.id === "downloadedList") {
-    const id = e.target.dataset.id || e.target.getAttribute("data-id");
-    if (id && curriculumData[id]) {
-      document.querySelector("textarea").value = curriculumData[id];
-      alert("Đã nạp lại giáo trình: " + id);
-    }
-  }
 });
 
-
+// ===== 🔙 Nút quay lại =====
 document.getElementById("backBtn").addEventListener("click", () => {
   document.getElementById("library").classList.add("hidden");
 });
