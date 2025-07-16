@@ -14,9 +14,13 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Chưa có bản ghi âm nào để phát lại!");
       return;
     }
+    replayBtn.textContent = "⏳"; // chuyển sang trạng thái đang phát
     const audioURL = URL.createObjectURL(audioBlob);
     const audio = new Audio(audioURL);
     audio.play();
+    audio.onended = () => {
+      replayBtn.textContent = "🔁"; // quay lại trạng thái mặc định
+    };
   });
 
   micBtn.addEventListener("click", async () => {
