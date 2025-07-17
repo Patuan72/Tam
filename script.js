@@ -131,3 +131,42 @@ if (replayBtn) {
     }
   });
 }
+
+
+
+// --- Tải giáo trình HTML về localStorage ---
+const lessonUrl = "https://drive.google.com/uc?export=download&id=12Q5q8y5bIVP4klZ4DPFVSxGC4o2ekS3Z";
+const lessonName = "Bài học Audio";
+
+async function downloadAndSaveHTML() {
+  try {
+    const res = await fetch(lessonUrl);
+    const html = await res.text();
+    localStorage.setItem("lesson_" + lessonName, html);
+    alert("Đã tải: " + lessonName);
+    renderLessonList();
+  } catch (e) {
+    alert("Lỗi khi tải bài học.");
+  }
+}
+
+function renderLessonList() {
+  const list = document.getElementById("lessonList");
+  list.innerHTML = "";
+  for (let key in localStorage) {
+    if (key.startsWith("lesson_")) {
+      const title = key.replace("lesson_", "");
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.textContent = title;
+      btn.onclick = () => {
+        const html = localStorage.getItem(key);
+        document.getElementById("contentBox").innerHTML = html;
+      };
+      li.appendChild(btn);
+      list.appendChild(li);
+    }
+  }
+}
+
+window.addEventListener("load", renderLessonList);
