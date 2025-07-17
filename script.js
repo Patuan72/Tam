@@ -1,35 +1,37 @@
 
-document.getElementById("download-btn").addEventListener("click", () => {
-  const url = "https://drive.google.com/uc?export=download&id=12Q5q8y5bIVP4klZ4DPFVSxGC4o2ekS3Z";
-  const name = "baihoc1.html";
+function downloadLesson() {
+  const url = document.getElementById('url-input').value;
+  const fileId = url.match(/[-\w]{25,}/);
+  if (!fileId) return alert("Link không hợp lệ");
 
-  fetch(url)
-    .then(res => res.blob())
-    .then(blob => {
-      const fileURL = URL.createObjectURL(blob);
-      localStorage.setItem("baihoc1", fileURL);
-      alert("Đã tải giáo trình!");
-      loadLibrary();
-    });
-});
+  const lessonUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+  const fileName = "lesson_" + Date.now() + ".html";
 
-function loadLibrary() {
-  const list = document.getElementById("lesson-list");
-  list.innerHTML = "";
-  for (let key in localStorage) {
-    if (key.startsWith("baihoc")) {
-      const li = document.createElement("li");
-      li.textContent = key;
-      li.addEventListener("click", () => {
-        fetch(localStorage.getItem(key))
-          .then(res => res.text())
-          .then(html => {
-            document.getElementById("lesson-content").innerHTML = html;
-          });
-      });
-      list.appendChild(li);
-    }
-  }
+  fetch(lessonUrl)
+    .then(response => response.text())
+    .then(content => {
+      localStorage.setItem(fileName, content);
+      addToLibrary(fileName);
+    })
+    .catch(err => alert("Lỗi tải bài học!"));
 }
 
-window.onload = loadLibrary;
+function addToLibrary(name) {
+  const list = document.getElementById("lesson-list");
+  const li = document.createElement("li");
+  li.textContent = name;
+  li.onclick = () => {
+    const html = localStorage.getItem(name);
+    const blob = new Blob([html], { type: "text/html" });
+    document.getElementById("lesson-frame").src = URL.createObjectURL(blob);
+  };
+  list.appendChild(li);
+}
+
+// Tải thư viện từ localStorage
+window.onload = () => {
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith("lesson_")) addToLibrary(key);
+  }
+};

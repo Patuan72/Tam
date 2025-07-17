@@ -4,27 +4,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Thư viện giáo trình</title>
+  <title>Lesson Loader</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>📘 Thư viện Giáo Trình</h1>
-    <button id="download-btn">📥 Tải giáo trình</button>
+    <h1>📘 Bài học</h1>
   </header>
-
   <main>
-    <section id="library">
-      <h2>Giáo trình đã tải</h2>
+    <div class="library">
+      <h2>Thư viện của tôi</h2>
       <ul id="lesson-list"></ul>
-    </section>
-
-    <section id="content-box">
+    </div>
+    <div class="content">
       <h2>Nội dung bài học</h2>
-      <div id="lesson-content">Chọn một giáo trình để xem nội dung.</div>
-    </section>
+      <iframe id="lesson-frame" src="" frameborder="0"></iframe>
+    </div>
   </main>
-
+  <footer>
+    <input type="text" id="url-input" placeholder="Dán link Google Drive HTML..." />
+    <button onclick="downloadLesson()">Tải về</button>
+  </footer>
   <script src="script.js"></script>
 </body>
 </html>
