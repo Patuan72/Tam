@@ -1,35 +1,27 @@
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: sans-serif;
   margin: 0;
   padding: 0;
-  background: #f7f7f7;
 }
-header {
-  background: #00BCD4;
-  color: white;
-  padding: 1em;
+
+header, footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px;
+  background-color: #eee;
 }
+
 main {
-  padding: 1em;
+  padding: 10px;
 }
-#lessonContent {
-  border: 1px solid #ccc;
-  padding: 1em;
-  background: white;
-  min-height: 100px;
-  margin-top: 10px;
+
+#library, #content {
+  margin-bottom: 20px;
 }
-ul#fileList {
+
+#downloadedList {
   list-style: none;
-  padding: 0;
-}
-ul#fileList li {
-  background: #fff;
-  padding: 0.5em;
-  margin: 0.5em 0;
-  cursor: pointer;
-  border: 1px solid #ccc;
+  padding-left: 0;
 }
