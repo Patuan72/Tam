@@ -1,48 +1,20 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VPM</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>VPM PWA Demo</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    #content-box { border: 1px solid #ccc; padding: 15px; min-height: 200px; margin-top: 20px; }
+    .book-button { display: inline-block; padding: 10px 15px; background: #007bff; color: white; margin: 5px; cursor: pointer; }
+  </style>
 </head>
 <body>
-  <header>
-    <div class="logo">VPM</div>
-    <div class="score">85</div>
-  <div class="speed-selector">
-    <span class="dot selected">●</span>
-    <span class="dot">○</span>
-    <span class="dot">○</span>
-  </div>
+  <h1>Thư viện VPM</h1>
+  <div class="book-button" onclick="loadBook('library/giaotrinh_mau.zip')">📘 Giáo trình mẫu</div>
+  <div id="content-box">👉 Chọn một cuốn sách ở trên để bắt đầu</div>
 
-    <div class="menu-icon" id="menuBtn">☰</div>
-  </header>
-  <main>
-    <textarea placeholder="Nhập hoặc dán nội dung cần luyện tập vào đây..."></textarea>
-  </main>
-  <footer>
-    <button class="icon" id="replay">🔁</button>
-    <button class="icon" id="mic">🎤</button>
-    <button class="icon" id="save">💾</button>
-  </footer>
-
-  <!-- Library modal -->
-  <div id="library" class="hidden">
-    <div class="library-content">
-      <button id="backBtn" class="back-btn">⬅️ Quay lại</button>
-      <h3>📚 Đã tải</h3>
-      <ul id="downloadedList"></ul>
-      <h3>☁️ Chưa tải</h3>
-      <ul id="availableList">
-        <li>
-          VPM - tiếng Anh (<a href="https://drive.google.com/file/d/18WXCZtCybZqUqdKjGVZh_kHaoinaqs1e/view?usp=drivesdk" target="_blank">Tải về</a>)
-          <button class="download-btn" data-id="vpm-en">Nạp vào</button>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="auto_loader.js"></script>
 </body>
 </html>
