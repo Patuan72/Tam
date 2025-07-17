@@ -1,18 +1,48 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Thư viện VPM</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    .file-entry { margin-bottom: 10px; }
-    a.download-link { color: blue; text-decoration: underline; font-weight: bold; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VPM</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h2>📚 Thư viện Tài liệu VPM</h2>
-  <div class="file-entry">📘 VPM – tiếng Anh: <a class="download-link" href="vpm-tieng-anh.html" download>Tải về</a></div>
-  <div class="file-entry">📘 VPM – tiếng Trung: <a class="download-link" href="vpm-tieng-trung.html" download>Tải về</a></div>
+  <header>
+    <div class="logo">VPM</div>
+    <div class="score">85</div>
+  <div class="speed-selector">
+    <span class="dot selected">●</span>
+    <span class="dot">○</span>
+    <span class="dot">○</span>
+  </div>
+
+    <div class="menu-icon" id="menuBtn">☰</div>
+  </header>
+  <main>
+    <textarea placeholder="Nhập hoặc dán nội dung cần luyện tập vào đây..."></textarea>
+  </main>
+  <footer>
+    <button class="icon" id="replay">🔁</button>
+    <button class="icon" id="mic">🎤</button>
+    <button class="icon" id="save">💾</button>
+  </footer>
+
+  <!-- Library modal -->
+  <div id="library" class="hidden">
+    <div class="library-content">
+      <button id="backBtn" class="back-btn">⬅️ Quay lại</button>
+      <h3>📚 Đã tải</h3>
+      <ul id="downloadedList"></ul>
+      <h3>☁️ Chưa tải</h3>
+      <ul id="availableList">
+        <li>
+          VPM - tiếng Anh (<a href="https://drive.google.com/file/d/18WXCZtCybZqUqdKjGVZh_kHaoinaqs1e/view?usp=drivesdk" target="_blank">Tải về</a>)
+          <button class="download-btn" data-id="vpm-en">Nạp vào</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
