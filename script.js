@@ -1,24 +1,27 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   const replayBtn = document.getElementById("replay");
   const micBtn = document.getElementById("mic");
   const saveBtn = document.getElementById("save");
   const textarea = document.querySelector("textarea");
 
-  // ======== 🔁 REPLAY - phát lại ghi âm gần nhất ========
+  let mediaRecorder;
+  let audioChunks = [];
+  let audioBlob = null;
+
   replayBtn.addEventListener("click", () => {
     if (!audioBlob) {
       alert("Chưa có bản ghi âm nào để phát lại!");
       return;
     }
+    replayBtn.textContent = "⏳"; // chuyển sang trạng thái đang phát
     const audioURL = URL.createObjectURL(audioBlob);
     const audio = new Audio(audioURL);
     audio.play();
+    audio.onended = () => {
+      replayBtn.textContent = "🔁"; // quay lại trạng thái mặc định
+    };
   });
-
-  // ======== 🎤 MIC - ghi âm bằng MediaRecorder ========
-  let mediaRecorder;
-  let audioChunks = [];
-  let audioBlob = null;
 
   micBtn.addEventListener("click", async () => {
     if (micBtn.textContent === "🎤") {
@@ -47,7 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ======== 💾 SAVE - lưu file âm thanh ========
   saveBtn.addEventListener("click", () => {
     if (!audioBlob) {
       alert("Bạn cần ghi âm trước khi lưu!");
@@ -67,28 +69,23 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-
-// ===== 📂 MENU: Hiện/ẩn thư viện =====
 document.getElementById("menuBtn").addEventListener("click", () => {
   const lib = document.getElementById("library");
   lib.classList.toggle("hidden");
 });
 
-// ===== 📘 Nội dung giáo trình mẫu =====
 const curriculumData = {
   "vpm-en": "Hello! How are you today?\nI'm fine, thank you. And you?"
 };
 
-// ===== 📥 Tải giáo trình và nạp vào textarea =====
 document.addEventListener("click", function (e) {
   if (e.target && e.target.classList.contains("download-btn")) {
     const item = e.target.parentElement;
     const id = e.target.dataset.id;
     const downloadedList = document.getElementById("downloadedList");
-    item.removeChild(e.target); // Xoá nút tải
-    downloadedList.appendChild(item); // Chuyển sang mục đã tải
+    item.removeChild(e.target);
+    downloadedList.appendChild(item);
 
-    // Nạp nội dung vào textarea
     if (curriculumData[id]) {
       document.querySelector("textarea").value = curriculumData[id];
       alert("Đã tải và nạp nội dung giáo trình vào màn hình học.");
@@ -96,12 +93,10 @@ document.addEventListener("click", function (e) {
   }
 });
 
-// ===== 🔙 Nút quay lại =====
 document.getElementById("backBtn").addEventListener("click", () => {
   document.getElementById("library").classList.add("hidden");
 });
 
-// ===== ⚡ SPEED SELECTION =====
 document.querySelectorAll('.dot').forEach((dot, index) => {
   dot.addEventListener('click', () => {
     document.querySelectorAll('.dot').forEach(d => d.classList.remove('selected'));
@@ -109,3 +104,30 @@ document.querySelectorAll('.dot').forEach((dot, index) => {
     console.log('Tốc độ được chọn:', ['Chậm', 'Trung bình', 'Nhanh'][index]);
   });
 });
+
+
+const replayBtn = document.getElementById('replayBtn');
+let isReplaying = false;
+
+function toggleReplay() {
+  if (!replayBtn) return;
+  isReplaying = !isReplaying;
+  replayBtn.textContent = isReplaying ? "⏳ Đang phát..." : "🔁 Replay";
+}
+
+// Kết nối khi nhấn replay
+if (replayBtn) {
+  replayBtn.addEventListener('click', () => {
+    toggleReplay();
+    // Phát lại audio, giả định dùng phần tử audio id="player"
+    const audio = document.getElementById('player');
+    if (audio) {
+      audio.play();
+      audio.onended = () => {
+        toggleReplay();
+      };
+    } else {
+      toggleReplay(); // fallback nếu không có audio
+    }
+  });
+}
