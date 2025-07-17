@@ -1,47 +1,30 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VPM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VPM - Hiển thị tên file tải</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
     <div class="logo">VPM</div>
-    <div class="score">85</div>
-  <div class="speed-selector">
-    <span class="dot selected">●</span>
-    <span class="dot">○</span>
-    <span class="dot">○</span>
-  </div>
-
-    <div class="menu-icon" id="menuBtn">☰</div>
+    <div class="score">Điểm: --</div>
+    <div class="speed">● ○ ○</div>
+    <div class="menu">☰</div>
   </header>
-  <main>
-    <textarea placeholder="Nhập hoặc dán nội dung cần luyện tập vào đây..."></textarea>
-  </main>
-  <footer>
-    <button class="icon" id="replay">🔁</button>
-    <button class="icon" id="mic">🎤</button>
-    <button class="icon" id="save">💾</button>
-  </footer>
 
-  <!-- Library modal -->
-  <div id="library" class="hidden">
-    <div class="library-content">
-      <button id="backBtn" class="back-btn">⬅️ Quay lại</button>
-      <h3>📚 Đã tải</h3>
-      <ul id="downloadedList"></ul>
-      <h3>☁️ Chưa tải</h3>
-      <ul id="availableList">
-        <li>
-          VPM - tiếng Anh (<a href="https://drive.google.com/file/d/18WXCZtCybZqUqdKjGVZh_kHaoinaqs1e/view?usp=drivesdk" target="_blank">Tải về</a>)
-          <button class="download-btn" data-id="vpm-en">Nạp vào</button>
-        </li>
-      </ul>
-    </div>
-  </div>
+  <main>
+    <section class="upload-section">
+      <label for="fileUpload">📥 Tải giáo trình HTML về:</label>
+      <input type="file" id="fileUpload" accept=".html,.zip"/>
+      <div id="fileNameDisplay">📚 Đã tải: <span id="fileName">Chưa có</span></div>
+    </section>
+
+    <section class="content-box" id="contentBox">
+      <!-- Hiển thị nội dung giáo trình sau khi chọn -->
+    </section>
+  </main>
 
   <script src="script.js"></script>
 </body>
