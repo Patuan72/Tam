@@ -1,56 +1,30 @@
+
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VPM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thư viện giáo trình</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <div class="logo">VPM</div>
-    <div class="score">85</div>
-  <div class="speed-selector">
-    <span class="dot selected">●</span>
-    <span class="dot">○</span>
-    <span class="dot">○</span>
-  </div>
-
-    <div class="menu-icon" id="menuBtn">☰</div>
+    <h1>📘 Thư viện Giáo Trình</h1>
+    <button id="download-btn">📥 Tải giáo trình</button>
   </header>
-  <main>
-    <textarea placeholder="Nhập hoặc dán nội dung cần luyện tập vào đây..."></textarea>
-  </main>
-  <footer>
-    <button class="icon" id="replay">🔁</button>
-    <button class="icon" id="mic">🎤</button>
-    <button class="icon" id="save">💾</button>
-  </footer>
 
-  <!-- Library modal -->
-  <div id="library" class="hidden">
-    <div class="library-content">
-      <button id="backBtn" class="back-btn">⬅️ Quay lại</button>
-      <h3>📚 Đã tải</h3>
-      <ul id="downloadedList"></ul>
-      <h3>☁️ Chưa tải</h3>
-      <ul id="availableList">
-        <li>
-          VPM - tiếng Anh (<a href="https://drive.google.com/file/d/18WXCZtCybZqUqdKjGVZh_kHaoinaqs1e/view?usp=drivesdk" target="_blank">Tải về</a>)
-          <button class="download-btn" data-id="vpm-en">Nạp vào</button>
-        </li>
-      </ul>
-    </div>
-  </div>
+  <main>
+    <section id="library">
+      <h2>Giáo trình đã tải</h2>
+      <ul id="lesson-list"></ul>
+    </section>
+
+    <section id="content-box">
+      <h2>Nội dung bài học</h2>
+      <div id="lesson-content">Chọn một giáo trình để xem nội dung.</div>
+    </section>
+  </main>
 
   <script src="script.js"></script>
-
-<!-- Giao diện tải và mở giáo trình -->
-<div style="margin-top: 10px;">
-  <button onclick="downloadAndSaveHTML()">📥 Tải giáo trình về</button>
-  <ul id="lessonList"></ul>
-</div>
-<div id="contentBox" style="border:1px solid #ccc; margin-top:10px; padding:10px;"></div>
-
 </body>
 </html>
