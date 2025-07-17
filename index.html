@@ -1,41 +1,37 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VPM - PWA</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>VPM</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <header>
-    <h1>VPM</h1>
-    <div id="score">Điểm: <span id="scoreValue">0</span></div>
-    <div id="menu-icons">
-      <button id="three-dots">⋮</button>
-      <button id="hamburger">☰</button>
+    <div id="logo">VPM</div>
+    <div id="score">Điểm: <span id="score-value">0</span></div>
+    <div id="menu">
+      <button>⋮</button>
+      <button>≡</button>
     </div>
   </header>
-
   <main>
-    <section id="library">
+    <section class="library">
       <h2>Thư viện</h2>
-      <button id="downloadBtn">📥 Tải giáo trình</button>
-      <ul id="downloadedList"></ul>
+      <input type="file" id="file-input" />
+      <button id="upload-button">📥 Tải giáo trình</button>
+      <p id="filename-display">Chưa chọn file nào</p>
     </section>
-
-    <section id="content">
+    <section class="content">
       <h2>Content Box</h2>
-      <div id="contentBox">Chưa chọn giáo trình</div>
+      <div id="content-display">Chưa chọn giáo trình</div>
     </section>
   </main>
-
   <footer>
     <button id="replay">🔁</button>
     <button id="mic">🎤</button>
     <button id="save">💾</button>
   </footer>
-
   <script src="script.js"></script>
 </body>
 </html>
