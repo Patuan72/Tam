@@ -1,21 +1,17 @@
 
-document.addEventListener("DOMContentLoaded", function () {
-  const downloadedList = document.getElementById("downloaded-list");
-  const uploadInput = document.getElementById("upload-input");
+function downloadAndMark() {
+    localStorage.setItem("vpm_tieng_anh", "downloaded");
+    alert("Đã tải thành công!");
+    location.reload();
+}
 
-  function addToLibrary(fileName) {
-    const entry = document.createElement("div");
-    entry.innerHTML = "📚 " + fileName;
-    entry.className = "downloaded-item";
-    downloadedList.appendChild(entry);
-  }
+function load() {
+    alert("Đã nạp vào.");
+}
 
-  document.querySelectorAll(".download-link").forEach(link => {
-    link.addEventListener("click", function (e) {
-      const fileName = this.getAttribute("data-name");
-      setTimeout(() => {
-        addToLibrary(fileName);
-      }, 1000);
-    });
-  });
-});
+window.onload = function() {
+    const isDownloaded = localStorage.getItem("vpm_tieng_anh") === "downloaded";
+    if (isDownloaded) {
+        document.getElementById("downloaded").innerHTML = '<p>📘 VPM - tiếng Anh (Đã tải)</p>';
+    }
+};
