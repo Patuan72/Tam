@@ -1,40 +1,18 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Thư viện</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; margin: 50px; }
-        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
-    </style>
+    <title>Thư viện - VPM</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>📂 Thư viện tài liệu</h2>
-    <p id="status">Trạng thái: chưa có tài liệu nào</p>
-    <button onclick="downloadFile()">⬇️ Tải về</button>
-    <button onclick="loadFile()">📥 Nạp vào</button>
-    <button onclick="goBack()">🔙 Quay lại</button>
-
-    <script>
-        function downloadFile() {
-            const fileUrl = 'downloads/mau_tai_lieu.txt';
-            const link = document.createElement('a');
-            link.href = fileUrl;
-            link.download = 'mau_tai_lieu.txt';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            document.getElementById("status").innerText = "Trạng thái: đã tải về";
-        }
-
-        function loadFile() {
-            document.getElementById("status").innerText = "Trạng thái: đã nạp vào";
-        }
-
-        function goBack() {
-            window.history.back();
-        }
-    </script>
+    <h1>📚 Thư viện giáo trình</h1>
+    <ul>
+        <li>
+            📘 <strong>Giáo trình Cấp 1</strong><br>
+            <a href="https://drive.google.com/uc?export=download&id=10cgEZbTgLbuaaxyPKq0yevHHs5oYYy3l" target="_blank">Tải xuống giáo trình (HTML)</a>
+        </li>
+    </ul>
 </body>
 </html>
