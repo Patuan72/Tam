@@ -1,8 +1,35 @@
-
-body { font-family: sans-serif; margin: 0; padding: 0; background: #f9f9f9; }
-header { background: #00bcd4; color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
-button { padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
-main { padding: 1rem; }
-#library, #content-box { margin-top: 1rem; }
-#lesson-list li { cursor: pointer; margin: 0.5rem 0; color: blue; text-decoration: underline; }
-#lesson-content { background: white; padding: 1rem; border: 1px solid #ccc; min-height: 100px; }
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f7f7f7;
+}
+header {
+  background: #00BCD4;
+  color: white;
+  padding: 1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+main {
+  padding: 1em;
+}
+#lessonContent {
+  border: 1px solid #ccc;
+  padding: 1em;
+  background: white;
+  min-height: 100px;
+  margin-top: 10px;
+}
+ul#fileList {
+  list-style: none;
+  padding: 0;
+}
+ul#fileList li {
+  background: #fff;
+  padding: 0.5em;
+  margin: 0.5em 0;
+  cursor: pointer;
+  border: 1px solid #ccc;
+}

@@ -1,28 +1,29 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Thư viện giáo trình</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Thư viện Giáo Trình</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
     <h1>📘 Thư viện Giáo Trình</h1>
-    <button id="download-btn">📥 Tải giáo trình</button>
+    <button id="uploadBtn">📥 Tải giáo trình</button>
   </header>
 
   <main>
-    <section id="library">
+    <section>
       <h2>Giáo trình đã tải</h2>
-      <ul id="lesson-list"></ul>
+      <ul id="fileList"></ul>
     </section>
 
-    <section id="content-box">
+    <section>
       <h2>Nội dung bài học</h2>
-      <div id="lesson-content">Chọn một giáo trình để xem nội dung.</div>
+      <div id="lessonContent">Chọn một giáo trình để xem nội dung.</div>
     </section>
+
+    <input type="file" id="fileInput" accept=".txt,.md,.json" style="display: none;" />
   </main>
 
   <script src="script.js"></script>
