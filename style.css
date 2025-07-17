@@ -1,33 +1,35 @@
 body {
-    margin: 0;
-    font-family: sans-serif;
-    background-color: #fff;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f7f7f7;
 }
 header {
-    background: #111;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
+  background: #00BCD4;
+  color: white;
+  padding: 1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 main {
-    padding: 20px;
+  padding: 1em;
 }
-.library h2, .content-box h2 {
-    margin-top: 0;
+#lessonContent {
+  border: 1px solid #ccc;
+  padding: 1em;
+  background: white;
+  min-height: 100px;
+  margin-top: 10px;
 }
-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: #eee;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
+ul#fileList {
+  list-style: none;
+  padding: 0;
 }
-button {
-    font-size: 24px;
-    background: none;
-    border: none;
+ul#fileList li {
+  background: #fff;
+  padding: 0.5em;
+  margin: 0.5em 0;
+  cursor: pointer;
+  border: 1px solid #ccc;
 }

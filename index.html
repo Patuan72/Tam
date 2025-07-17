@@ -1,34 +1,31 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>VPM</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thư viện Giáo Trình</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <span class="logo">VPM</span>
-        <span class="score">Điểm: <span id="score">0</span></span>
-        <div class="menu-icon">☰</div>
-    </header>
+  <header>
+    <h1>📘 Thư viện Giáo Trình</h1>
+    <button id="uploadBtn">📥 Tải giáo trình</button>
+  </header>
 
-    <main>
-        <section class="library">
-            <h2>Thư viện</h2>
-        </section>
-        <section class="content-box">
-            <h2>Content Box</h2>
-            <p>Chưa chọn giáo trình</p>
-        </section>
-    </main>
+  <main>
+    <section>
+      <h2>Giáo trình đã tải</h2>
+      <ul id="fileList"></ul>
+    </section>
 
-    <footer>
-        <button id="replay">🔁</button>
-        <button id="mic">🎤</button>
-        <button id="save">💾</button>
-    </footer>
+    <section>
+      <h2>Nội dung bài học</h2>
+      <div id="lessonContent">Chọn một giáo trình để xem nội dung.</div>
+    </section>
 
-    <script src="script.js"></script>
+    <input type="file" id="fileInput" accept=".txt,.md,.json" style="display: none;" />
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
