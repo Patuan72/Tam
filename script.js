@@ -133,31 +133,14 @@ if (replayBtn) {
 }
 
 
+// Theo dõi các link tải về có class 'track-download'
+document.querySelectorAll('.track-download').forEach(link => {
   link.addEventListener('click', () => {
     const title = link.getAttribute('data-title');
     if (title) {
       const downloadedList = document.getElementById('downloadedList');
       const li = document.createElement('li');
       li.textContent = title + " (đã tải)";
-      downloadedList.appendChild(li);
-    }
-  });
-});
-
-// Theo dõi các link tải về có class 'track-download'
-document.querySelectorAll('.track-download').forEach(link => {
-  link.addEventListener('click', () => {
-    const title = link.getAttribute('data-title');
-    const href = link.getAttribute('href');
-    if (title && href) {
-      const downloadedList = document.getElementById('downloadedList');
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = href;
-      a.target = "_blank";
-      a.textContent = title;
-      li.appendChild(a);
-      li.append(" (đã tải)");
       downloadedList.appendChild(li);
     }
   });
