@@ -1,15 +1,3 @@
-function updateDownloadStatus(filename, blobURL) {
-    const status = document.getElementById("downloadStatus");
-    status.innerHTML = '';
-    const link = document.createElement("a");
-    link.href = blobURL;
-    link.textContent = filename;
-    link.download = filename;
-    link.style.color = "blue";
-    link.style.textDecoration = "underline";
-    status.appendChild(link);
-}
-
 
 document.addEventListener("DOMContentLoaded", () => {
   const replayBtn = document.getElementById("replay");
