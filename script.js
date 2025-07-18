@@ -17,3 +17,23 @@ function saveHtmlFile() {
         <p style="margin-top:10px;">📂 <a href="${a.href}" target="_blank">${fileName}</a> đã được tải xuống.</p>
     `;
 }
+
+
+// Tạo và đăng ký Service Worker trực tiếp
+if ('serviceWorker' in navigator) {
+    const swCode = `
+        self.addEventListener('install', event => {
+            self.skipWaiting();
+        });
+        self.addEventListener('fetch', function(event) {
+            event.respondWith(fetch(event.request));
+        });
+    `;
+    const blob = new Blob([swCode], { type: 'application/javascript' });
+    const swURL = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swURL).then(reg => {
+        console.log('SW registered via blob:', reg.scope);
+    }).catch(err => {
+        console.error('SW registration failed:', err);
+    });
+}
