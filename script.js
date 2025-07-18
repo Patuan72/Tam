@@ -1,42 +1,30 @@
 
-document.addEventListener("DOMContentLoaded", function () {
-  const downloadButtons = document.querySelectorAll(".download-btn");
-  const downloadedList = document.getElementById("downloadedList");
+document.getElementById("download-form").addEventListener("submit", function(event) {
+  event.preventDefault();
 
-  downloadButtons.forEach((button) => {
-    button.addEventListener("click", function (event) {
-      const id = event.target.getAttribute("data-id");
+  const htmlContent = document.getElementById("html-input").value.trim();
+  const fileName = "downloaded.html";
 
-      if (id === "vpm-en") {
-        const htmlContent = `
-          <html>
-            <head><meta charset="UTF-8"><title>VPM Sample</title></head>
-            <body>
-              <h1>Hello! How are you today?</h1>
-              <p>I'm fine, thank you. And you?</p>
-            </body>
-          </html>
-        `;
+  if (htmlContent === "") {
+    alert("Vui lòng nhập nội dung HTML.");
+    return;
+  }
 
-        const blob = new Blob([htmlContent], { type: "text/html" });
-        const url = URL.createObjectURL(blob);
-        const fileName = "vpm-sample.html";
+  const blob = new Blob([htmlContent], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
 
-        // Tải về
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileName;
-        a.click();
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  a.click();
 
-        // Hiển thị tên + link mở lại
-        const li = document.createElement("li");
-        const link = document.createElement("a");
-        link.href = url;
-        link.textContent = fileName;
-        link.target = "_blank";
-        li.appendChild(link);
-        downloadedList.appendChild(li);
-      }
-    });
-  });
+  // Hiển thị tên file tải về kèm liên kết
+  const li = document.createElement("li");
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = "_blank";
+  link.textContent = fileName;
+  li.appendChild(link);
+
+  document.getElementById("downloaded-files").appendChild(li);
 });
