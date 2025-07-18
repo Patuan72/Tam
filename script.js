@@ -31,9 +31,12 @@ if ('serviceWorker' in navigator) {
     `;
     const blob = new Blob([swCode], { type: 'application/javascript' });
     const swURL = URL.createObjectURL(blob);
-    navigator.serviceWorker.register(swURL).then(reg => {
+    console.log('Registering service worker...');
+navigator.serviceWorker.register(swURL).then(reg => {
         console.log('SW registered via blob:', reg.scope);
     }).catch(err => {
         console.error('SW registration failed:', err);
     });
 }
+
+console.log('Script loaded successfully');
