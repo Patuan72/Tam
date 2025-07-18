@@ -17,20 +17,23 @@ document.addEventListener("DOMContentLoaded", function () {
             </body>
           </html>
         `;
+
         const blob = new Blob([htmlContent], { type: "text/html" });
         const url = URL.createObjectURL(blob);
         const fileName = "vpm-sample.html";
 
+        // Tải về
         const a = document.createElement("a");
         a.href = url;
         a.download = fileName;
         a.click();
 
+        // Hiển thị tên + link mở lại
         const li = document.createElement("li");
         const link = document.createElement("a");
         link.href = url;
-        link.target = "_blank";
         link.textContent = fileName;
+        link.target = "_blank";
         li.appendChild(link);
         downloadedList.appendChild(li);
       }
