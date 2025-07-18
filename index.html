@@ -43,22 +43,5 @@
 
   <script src="script.js"></script>
 
-
-<script>
-  // Register service worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js').then(() => {
-      console.log('Service Worker Registered');
-    });
-  }
-
-  // Listen for file download and show link
-  function showDownloadedFile(fileName) {
-    const container = document.getElementById("downloaded-file");
-    container.innerHTML = `<a href="${fileName}" download>${fileName}</a>`;
-  }
-</script>
-<div id="downloaded-file" style="margin-top:10px;"></div>
-
 </body>
 </html>
