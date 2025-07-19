@@ -1,52 +1,48 @@
-
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>VPM</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <header>
-    <h1>VPM</h1>
-    <div id="score">Điểm: 0</div>
-    <div id="menu">
-      <button onclick="showLibrary()">☰</button>
-    </div>
+    <div class="logo">VPM</div>
+    <div class="score">Điểm: <span id="score">85</span></div>
+    <div class="speed">● ○ ○</div>
+    <div id="menuBtn">☰</div>
   </header>
 
   <main>
-    <textarea placeholder="Nhập hoặc tải nội dung..."></textarea>
-    <iframe id="viewer" title="Giáo trình"></iframe>
+    <textarea placeholder="Nhập hoặc dán nội dung cần luyện tập vào đây..."></textarea>
   </main>
 
   <footer>
-    <button id="replay">🔁</button>
-    <button id="mic">🎤</button>
-    <button id="save">💾</button>
+    <button id="replayBtn">🔁</button>
+    <button id="micBtn">🎤</button>
+    <button id="saveBtn">💾</button>
   </footer>
 
-  <div id="library" class="hidden">
-    <h2>Thư viện</h2>
-    <button onclick="showSaved()">📥 Đã tải</button>
-    <button onclick="showRemote()">☁️ Chưa tải</button>
-    <button onclick="showGiaoTrinh()">📚 Giáo trình</button>
+  <div id="libraryModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>📚 Đã tải</h2>
+      <ul id="downloadedList">
+        <!-- Danh sách file đã lưu sẽ hiển thị ở đây -->
+      </ul>
 
-    <section id="saved" class="lib-section hidden">
-      <h3>📥 Đã tải</h3>
-      <ul id="saved-list"></ul>
-    </section>
+      <h2>☁️ Chưa tải</h2>
+      <ul id="externalList">
+        <li><a href="https://drive.google.com/file/d/138bZpmcvtkNAyp5_uRBOS5OnjbcQcmRL/view?usp=drivesdk" target="_blank">Tiếng Anh</a></li>
+      </ul>
 
-    <section id="remote" class="lib-section hidden">
-      <h3>☁️ Chưa tải</h3>
-      <a href="https://drive.google.com/file/d/138bZpmcvtkNAyp5_uRBOS5OnjbcQcmRL/view?usp=drivesdk"
-         onclick="fetchAndSave(this.href); return false;">Giáo trình bài 1</a>
-    </section>
+      <h2>📖 Giáo trình</h2>
+      <div id="iframeContainer">
+        <iframe id="previewFrame" src="" width="100%" height="300px"></iframe>
+      </div>
 
-    <section id="giaotrinh" class="lib-section hidden">
-      <h3>📚 Giáo trình</h3>
-      <p>Hiển thị nội dung đã tải bằng iframe.</p>
-    </section>
+      <button id="backBtn">⬅️ Quay lại</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
