@@ -9,8 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let audioChunks = [];
   let audioBlob = null;
 
-  let currentRate = 1.0;
-
   replayBtn.addEventListener("click", () => {
     if (!audioBlob) {
       alert("Chưa có bản ghi âm nào để phát lại!");
@@ -83,9 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     dot.addEventListener('click', () => {
       document.querySelectorAll('.dot').forEach(d => d.classList.remove('selected'));
       dot.classList.add('selected');
-      const rates = [0.6, 1.0, 1.4];
-      currentRate = rates[index];
-      console.log('Tốc độ được chọn:', ['Chậm', 'Trung bình', 'Nhanh'][index], `(${currentRate})`);
+      console.log('Tốc độ được chọn:', ['Chậm', 'Trung bình', 'Nhanh'][index]);
     });
   });
 
@@ -105,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
         div.style.cursor = "pointer";
         div.onclick = () => {
           const utterance = new SpeechSynthesisUtterance(sentence);
-          utterance.rate = currentRate;
           speechSynthesis.speak(utterance);
         };
         sentenceList.appendChild(div);

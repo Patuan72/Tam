@@ -96,15 +96,3 @@ footer {
 .sentence-item:active {
   background-color: #e0f7fa;
 }
-
-
-/* Giãn cách đều và rõ ràng hơn cho các chấm chọn tốc độ */
-.speed-selector {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-}
-.dot {
-  font-size: 20px;
-}
