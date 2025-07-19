@@ -1,29 +1,28 @@
+
 body {
   font-family: sans-serif;
   padding: 1rem;
-  background: #f4f4f4;
+  background: #f5f5f5;
 }
 h1 {
   color: #333;
 }
-input, ul {
+input {
   margin: 1rem 0;
 }
 ul {
-  list-style: none;
+  list-style-type: none;
   padding: 0;
 }
-ul li {
+li {
   margin: 0.5rem 0;
-}
-ul li a {
-  text-decoration: underline;
   cursor: pointer;
   color: blue;
 }
 iframe {
   width: 100%;
-  height: 70vh;
+  height: 400px;
   border: 1px solid #ccc;
+  margin-top: 1rem;
   background: white;
 }
