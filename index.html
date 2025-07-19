@@ -1,29 +1,43 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VPM</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>VPM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>VPM</h1>
-  </header>
-
-  <main>
-    <section id="main-content">
-      <button id="downloadGiaoTrinhBtn">📥 Tải Giáo trình</button>
-    </section>
-
-    <section id="library">
-      <h2>Đã tải</h2>
-      <div id="downloadedList">
-        <!-- Các mục đã lưu sẽ hiện ở đây -->
-      </div>
-    </section>
-  </main>
-
-  <script src="script.js"></script>
+    <header>
+        <h1>VPM</h1>
+        <div class="score-speed">
+            <div id="score">Điểm: 0</div>
+            <div class="speed-dots">
+                <span class="dot selected"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </header>
+    <main>
+        <section id="library">
+            <h2>Đã tải</h2>
+            <ul id="downloadedList"></ul>
+            <h2>Chưa tải</h2>
+            <ul id="undownloadedList">
+                <li><a href="https://drive.google.com/file/d/138bZpmcvtkNAyp5_uRBOS5OnjbcQcmRL/view?usp=drivesdk" target="_blank">Tiếng Anh</a></li>
+            </ul>
+        </section>
+        <section id="contentFrameSection" class="hidden">
+            <iframe id="contentFrame" title="Giáo trình"></iframe>
+        </section>
+    </main>
+    <footer>
+        <button id="backBtn">←</button>
+        <button id="replayBtn">🔁</button>
+        <button id="micBtn">🎤</button>
+        <button id="saveBtn">💾</button>
+    </footer>
+    <script src="script.js"></script>
 </body>
 </html>

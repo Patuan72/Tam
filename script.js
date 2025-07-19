@@ -1,57 +1,52 @@
-const dbName = "GiaoTrinhDB";
-const storeName = "htmlFiles";
-const fileUrl = "https://drive.google.com/u/0/uc?id=138bZpmcvtkNAyp5_uRBOS5OnjbcQcmRL&export=download";
-const fileName = "GiaoTrinh.html";
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const db = await initDB();
+// indexedDB setup
+let db;
+const request = indexedDB.open("VPM_DB", 1);
 
-  document.getElementById("downloadGiaoTrinhBtn").addEventListener("click", async () => {
-    const content = await fetchFile(fileUrl);
-    await saveToIndexedDB(db, fileName, content);
-    renderSavedFiles(db);
-  });
+request.onerror = () => console.error("DB error");
+request.onsuccess = (event) => {
+    db = event.target.result;
+    loadDownloaded();
+};
+request.onupgradeneeded = (event) => {
+    db = event.target.result;
+    db.createObjectStore("files", { keyPath: "name" });
+};
 
-  renderSavedFiles(db);
-});
+// Add a sample offline file
+function saveSample() {
+    const content = '<h1>Giáo trình Offline</h1><p>Nội dung được lưu để xem offline.</p>';
+    const transaction = db.transaction(["files"], "readwrite");
+    const store = transaction.objectStore("files");
+    store.put({ name: "Giáo trình", content });
+    loadDownloaded();
+}
 
-function initDB() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(dbName, 1);
-    request.onerror = () => reject("DB error");
-    request.onsuccess = () => resolve(request.result);
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      db.createObjectStore(storeName);
+// Load downloaded list
+function loadDownloaded() {
+    const list = document.getElementById("downloadedList");
+    list.innerHTML = "";
+    const tx = db.transaction("files", "readonly");
+    const store = tx.objectStore("files");
+    store.openCursor().onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+            const li = document.createElement("li");
+            li.textContent = cursor.value.name;
+            li.onclick = () => showContent(cursor.value.content);
+            list.appendChild(li);
+            cursor.continue();
+        }
     };
-  });
 }
 
-function fetchFile(url) {
-  return fetch(url).then((res) => res.text());
+// Display iframe content
+function showContent(html) {
+    document.getElementById("contentFrame").srcdoc = html;
+    document.getElementById("contentFrameSection").classList.remove("hidden");
 }
 
-function saveToIndexedDB(db, name, content) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction([storeName], "readwrite");
-    const store = tx.objectStore(storeName);
-    store.put(content, name);
-    tx.oncomplete = resolve;
-    tx.onerror = reject;
-  });
-}
-
-function renderSavedFiles(db) {
-  const container = document.getElementById("downloadedList");
-  container.innerHTML = "";
-  const tx = db.transaction([storeName], "readonly");
-  const store = tx.objectStore(storeName);
-  const getReq = store.get(fileName);
-  getReq.onsuccess = () => {
-    if (getReq.result) {
-      const iframe = document.createElement("iframe");
-      iframe.srcdoc = getReq.result;
-      container.appendChild(iframe);
-    }
-  };
-}
+// Auto-save on first load
+window.addEventListener("load", () => {
+    setTimeout(saveSample, 1000);
+});
