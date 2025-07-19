@@ -5,9 +5,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveBtn = document.getElementById("save");
   const textarea = document.querySelector("textarea");
 
+  const sentences = [
+    "Hello. How are you?",
+    "I'm fine, thank you.",
+    "What's your name?",
+    "My name is Anna.",
+    "Nice to meet you!"
+  ];
+
+  let current = 0;
+  textarea.value = sentences[current];
+
   let mediaRecorder;
   let audioChunks = [];
   let audioBlob = null;
+
+  function showSentence(index) {
+    textarea.value = sentences[index];
+    audioBlob = null;
+  }
 
   replayBtn.addEventListener("click", () => {
     if (!audioBlob) {
@@ -68,58 +84,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   });
 
-  document.getElementById("menuBtn").addEventListener("click", () => {
-    loadLibrary();
-    const lib = document.getElementById("library");
-    lib.classList.toggle("hidden");
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    current = (current + 1) % sentences.length;
+    showSentence(current);
   });
 
-  document.getElementById("backBtn").addEventListener("click", () => {
-    document.getElementById("library").classList.add("hidden");
-  });
-
-  document.querySelectorAll('.dot').forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-      document.querySelectorAll('.dot').forEach(d => d.classList.remove('selected'));
-      dot.classList.add('selected');
-      console.log('Tốc độ được chọn:', ['Chậm', 'Trung bình', 'Nhanh'][index]);
-    });
+  document.getElementById("prevBtn").addEventListener("click", () => {
+    current = (current - 1 + sentences.length) % sentences.length;
+    showSentence(current);
   });
 });
-
-// Load tài liệu đã tải từ IndexedDB
-function loadLibrary() {
-  const dbName = 'VPM_DB';
-  const storeName = 'files';
-  const downloadedList = document.getElementById("downloadedList");
-  downloadedList.innerHTML = "";
-
-  const openDB = indexedDB.open(dbName, 1);
-  openDB.onupgradeneeded = (e) => {
-    const db = e.target.result;
-    db.createObjectStore(storeName, { keyPath: "name" });
-  };
-  openDB.onsuccess = (e) => {
-    const db = e.target.result;
-    const tx = db.transaction(storeName, 'readonly');
-    const store = tx.objectStore(storeName);
-    const getAll = store.getAll();
-    getAll.onsuccess = () => {
-      getAll.result.forEach(file => {
-        const li = document.createElement("li");
-        const a = document.createElement("a");
-        a.href = "#";
-        a.textContent = "📄 " + file.name;
-        a.addEventListener("click", () => {
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(file.content, "text/html");
-          const text = doc.body.textContent.trim();
-          document.querySelector("textarea").value = text;
-          document.getElementById("library").classList.add("hidden");
-        });
-        li.appendChild(a);
-        downloadedList.appendChild(li);
-      });
-    };
-  };
-}
