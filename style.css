@@ -86,3 +86,13 @@ footer {
 .selected {
   font-weight: bold;
 }
+
+.sentence-item {
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE10+ */
+  -moz-user-select: none; /* Firefox */
+}
+.sentence-item:active {
+  background-color: #e0f7fa;
+}

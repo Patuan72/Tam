@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
         div.onclick = () => {
           const utterance = new SpeechSynthesisUtterance(sentence);
           utterance.rate = currentRate;
-          console.log('Phát câu:', sentence, 'với tốc độ', utterance.rate); speechSynthesis.speak(utterance);
+          speechSynthesis.speak(utterance);
         };
         sentenceList.appendChild(div);
       });
