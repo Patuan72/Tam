@@ -7,37 +7,10 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="header">
-    <span class="menu">☰</span>
-    <span class="logo">VPM</span>
-    <span class="more">⋮</span>
-  </div>
-
-  <div class="score-section">
-    <div class="score">85</div>
-    <div class="speed">● ○ ○</div>
-  </div>
-
-  <div class="content-box">
-    <textarea id="textInput" placeholder="Nhập hoặc dán nội dung cần luyện tập vào đây..."></textarea>
-  </div>
-
-  <div class="library-section">
-    <h2>📚 Đã tải</h2>
-    <ul id="loadedFiles"></ul>
-
-    <h2>☁️ Chưa tải</h2>
-    <ul id="availableFiles"></ul>
-  </div>
-
+  <h1>📘 Giáo trình của tôi</h1>
+  <input type="file" id="fileInput" accept=".html"/>
+  <ul id="fileList"></ul>
   <iframe id="viewer" title="Trình xem giáo trình"></iframe>
-
-  <div class="footer">
-    <button id="replay">🔁</button>
-    <button id="mic">🎤</button>
-    <button id="save">💾</button>
-  </div>
-
   <script src="script.js"></script>
 </body>
 </html>
