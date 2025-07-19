@@ -13,9 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   textarea.value = "Unit 1\nHello. How are you?";
 
-  // Phát audio test được nhúng sẵn khi mở trang
-  const audio = new Audio("test-audio.mp3");
-  audio.play();
+  let hasPlayed = false;
+  textarea.addEventListener("click", () => {
+    if (!hasPlayed) {
+      const audio = new Audio("test-audio.mp3");
+      audio.play();
+      hasPlayed = true;
+    }
+  });
 
   if (menuBtn && backBtn) {
     menuBtn.addEventListener("click", () => {
