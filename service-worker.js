@@ -1,20 +1,18 @@
-self.addEventListener('install', function(e) {
+
+self.addEventListener("install", (e) => {
   e.waitUntil(
-    caches.open('pwa-cache').then(function(cache) {
+    caches.open("vpm-cache").then((cache) => {
       return cache.addAll([
-        '/',
-        '/index.html',
-        '/style.css',
-        '/script.js'
+        "./",
+        "./index.html",
+        "./style.css",
+        "./script.js"
       ]);
     })
   );
 });
-
-self.addEventListener('fetch', function(e) {
+self.addEventListener("fetch", (e) => {
   e.respondWith(
-    caches.match(e.request).then(function(response) {
-      return response || fetch(e.request);
-    })
+    caches.match(e.request).then((res) => res || fetch(e.request))
   );
 });
