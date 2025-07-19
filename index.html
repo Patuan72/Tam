@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VPM</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -10,33 +10,37 @@
   <header>
     <div class="logo">VPM</div>
     <div class="score">85</div>
-    <div class="speed">● ○ ○</div>
-    <div class="menu" onclick="toggleLibrary()">☰</div>
+    <div class="speed-selector">
+      <span class="dot selected">●</span>
+      <span class="dot">○</span>
+      <span class="dot">○</span>
+    </div>
+    <div class="menu-icon" id="menuBtn">☰</div>
   </header>
+
   <main>
-    <textarea placeholder="Nhập hoặc dán nội dung..."></textarea>
+    <textarea placeholder="Nhập hoặc dán nội dung cần luyện tập vào đây..."></textarea>
   </main>
+
   <footer>
-    <button>🔁</button>
-    <button>🎤</button>
-    <button>💾</button>
+    <button class="icon" id="replay">🔁</button>
+    <button class="icon" id="mic">🎤</button>
+    <button class="icon" id="save">💾</button>
   </footer>
 
-  <div id="libraryModal" class="modal">
+  <!-- Library modal ẩn mặc định -->
+  <div id="library" class="hidden">
     <div class="library-content">
-      <h2>📚 Đã tải</h2>
-      <ul id="localFilesList">
-        <li><a href="#" onclick="openGiaotrinh()">Giáo trình</a></li>
+      <button id="backBtn" class="back-btn">⬅️ Quay lại</button>
+      <h3>📚 Đã tải</h3>
+      <ul id="downloadedList">
+        <li><a href="#">Giáo trình</a></li>
       </ul>
-      <h2>☁️ Chưa tải</h2>
-      <ul>
-        <li><a href="https://drive.google.com/file/d/138bZpmcvtkNAyp5_uRBOS5OnjbcQcmRL/view?usp=drivesdk" target="_blank">Tiếng Anh</a></li>
+      <h3>☁️ Chưa tải</h3>
+      <ul id="availableList">
+        <li>Tiếng Anh (<a href="https://drive.google.com/file/d/138bZpmcvtkNAyp5_uRBOS5OnjbcQcmRL/view?usp=drivesdk" target="_blank">Tải về</a>)</li>
       </ul>
     </div>
-  </div>
-
-  <div id="iframeContainer" style="display:none;">
-    <iframe id="giaotrinhIframe" width="100%" height="500px"></iframe>
   </div>
 
   <script src="script.js"></script>
