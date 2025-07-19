@@ -1,65 +1,88 @@
-body, html {
+body {
   margin: 0;
-  padding: 0;
   font-family: sans-serif;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100vh;
 }
-
-header, footer {
-  padding: 10px;
+header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 24px;
 }
-
 main {
   flex-grow: 1;
   padding: 10px;
 }
-
 textarea {
   width: 100%;
-  height: 100%;
-  font-size: 16px;
+  height: 60vh;
+  font-size: 18px;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #000;
+  resize: none;
 }
-
 footer {
-  border-top: none;
   position: fixed;
   bottom: 0;
   width: 100%;
-  background: white;
+  background: #fff;
+  display: flex;
   justify-content: space-around;
+  padding: 10px 0;
+  border-top: 1px solid #ccc;
 }
-
-button {
-  font-size: 24px;
+.icon {
+  font-size: 36px;
   background: none;
   border: none;
 }
-
-.modal {
+#library {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: white;
-  overflow-y: auto;
+  background: #ffffffee;
   z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
 }
-
+.library-content h3 {
+  margin-top: 20px;
+}
+.library-content ul {
+  list-style: none;
+  padding-left: 0;
+}
+.library-content li {
+  margin: 5px 0;
+  font-size: 18px;
+}
+.download-btn {
+  margin-left: 10px;
+  padding: 4px 8px;
+}
 .hidden {
   display: none;
 }
-
-.modal-content {
-  padding: 20px;
+.back-btn {
+  font-size: 18px;
+  margin-bottom: 10px;
 }
-
-#iframeContainer {
-  margin-top: 10px;
-  border: 1px solid #ccc;
+.speed-selector {
+  text-align: center;
+  margin-top: 4px;
+  font-size: 18px;
+}
+.dot {
+  margin: 0 4px;
+  cursor: pointer;
+}
+.selected {
+  font-weight: bold;
 }
