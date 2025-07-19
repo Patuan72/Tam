@@ -122,3 +122,16 @@ footer {
   color: #ff9800; /* cam sáng */
   font-size: 28px;
 }
+
+/* Chỉnh lại dot: mặc định đen, khi chọn sẽ cam và lớn hơn */
+.dot {
+  font-size: 20px;
+  cursor: pointer;
+  color: #000; /* đen đều */
+  transition: all 0.2s ease;
+}
+
+.dot.selected {
+  color: #ff9800; /* cam sáng */
+  font-size: 28px;
+}
