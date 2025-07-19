@@ -88,32 +88,35 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-// Sau khi DOM đã load, đảm bảo luôn hiển thị "Giáo trình"
+// Sau khi DOM đã load, thêm "Giáo trình" nếu chưa có
 window.addEventListener("load", () => {
   const dbName = 'VPM_DB';
   const storeName = 'files';
   const content = `<html><body><h1>Chào mừng đến với Giáo trình</h1><p>Đây là nội dung mẫu của giáo trình bạn đã tải.</p></body></html>`;
+
   const openDB = indexedDB.open(dbName, 1);
   openDB.onsuccess = (e) => {
     const db = e.target.result;
-    const tx = db.transaction(storeName, 'readwrite');
+    const tx = db.transaction(storeName, 'readonly');
     const store = tx.objectStore(storeName);
     const getReq = store.get("Giáo trình");
     getReq.onsuccess = () => {
       if (!getReq.result) {
-        store.put({ name: "Giáo trình", content });
+        const txAdd = db.transaction(storeName, 'readwrite');
+        txAdd.objectStore(storeName).put({ name: "Giáo trình", content });
+        txAdd.oncomplete = () => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.textContent = "Giáo trình";
+          a.href = '#';
+          a.onclick = () => {
+            const blob = new Blob([content], { type: 'text/html' });
+            document.getElementById("viewer").src = URL.createObjectURL(blob);
+          };
+          li.appendChild(a);
+          document.getElementById('downloadedList').appendChild(li);
+        };
       }
-      // Dù có hay chưa, đều hiển thị trên giao diện
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.textContent = "Giáo trình";
-      a.href = '#';
-      a.onclick = () => {
-        const blob = new Blob([content], { type: 'text/html' });
-        document.getElementById("viewer").src = URL.createObjectURL(blob);
-      };
-      li.appendChild(a);
-      document.getElementById('downloadedList').appendChild(li);
     };
   };
 });
