@@ -4,13 +4,36 @@ document.addEventListener("DOMContentLoaded", () => {
   const micBtn = document.getElementById("mic");
   const saveBtn = document.getElementById("save");
   const textarea = document.querySelector("textarea");
+  const menuBtn = document.getElementById("menuBtn");
+  const backBtn = document.getElementById("backBtn");
 
   let mediaRecorder;
   let audioChunks = [];
   let audioBlob = null;
 
-  // Gán nội dung mặc định
-  textarea.value = "Hello. How are you?\nI'm fine, thank you.\nNice to meet you.";
+  // Nội dung các bài học
+  const lessons = {
+    1: "Hello. How are you?\nI'm fine, thank you.",
+    2: "This is my mother. That is my father.",
+    3: "I like apples. Do you like bananas?"
+  };
+
+  // Gắn sự kiện chọn bài học trong mục lục
+  document.querySelectorAll("#lessonList a").forEach(link => {
+    link.addEventListener("click", () => {
+      const id = link.dataset.id;
+      textarea.value = lessons[id];
+      document.getElementById("library").classList.add("hidden");
+    });
+  });
+
+  menuBtn.addEventListener("click", () => {
+    document.getElementById("library").classList.toggle("hidden");
+  });
+
+  backBtn.addEventListener("click", () => {
+    document.getElementById("library").classList.add("hidden");
+  });
 
   replayBtn.addEventListener("click", () => {
     if (!audioBlob) {
