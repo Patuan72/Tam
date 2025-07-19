@@ -96,3 +96,29 @@ footer {
 .sentence-item:active {
   background-color: #e0f7fa;
 }
+
+
+/* Giãn cách đều và rõ ràng hơn cho các chấm chọn tốc độ */
+.speed-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+.dot {
+  font-size: 20px;
+}
+
+
+/* Chấm tốc độ - thêm màu cam sáng khi được chọn */
+.dot {
+  font-size: 20px;
+  cursor: pointer;
+  color: #999;
+  transition: all 0.2s ease;
+}
+
+.dot.selected {
+  color: #ff9800; /* cam sáng */
+  font-size: 28px;
+}

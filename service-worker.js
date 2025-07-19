@@ -1,4 +1,3 @@
-
 self.addEventListener('install', function(e) {
   e.waitUntil(
     caches.open('pwa-cache').then(function(cache) {
@@ -6,9 +5,7 @@ self.addEventListener('install', function(e) {
         '/',
         '/index.html',
         '/style.css',
-        '/script.js',
-        '/unit1.json',
-        '/unit2.json'
+        '/script.js'
       ]);
     })
   );
