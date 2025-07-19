@@ -11,19 +11,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let audioChunks = [];
   let audioBlob = null;
 
-  // Gán nội dung mẫu
   textarea.value = "Unit 1\nHello. How are you?";
 
-  // Phát audio mẫu khi load (test)
-  const audio = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+  // Phát audio test được nhúng sẵn khi mở trang
+  const audio = new Audio("test-audio.mp3");
   audio.play();
 
-  // Thư viện (nếu giữ lại)
   if (menuBtn && backBtn) {
     menuBtn.addEventListener("click", () => {
       document.getElementById("library").classList.toggle("hidden");
     });
-
     backBtn.addEventListener("click", () => {
       document.getElementById("library").classList.add("hidden");
     });
