@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let audioChunks = [];
   let audioBlob = null;
 
+  // Gán nội dung mặc định
   textarea.value = "Hello. How are you?\nI'm fine, thank you.\nNice to meet you.";
 
   replayBtn.addEventListener("click", () => {
