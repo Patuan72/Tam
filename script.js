@@ -3,36 +3,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const replayBtn = document.getElementById("replay");
   const micBtn = document.getElementById("mic");
   const saveBtn = document.getElementById("save");
-  const textarea = document.querySelector("textarea");
   const menuBtn = document.getElementById("menuBtn");
   const backBtn = document.getElementById("backBtn");
+  const textarea = document.querySelector("textarea");
 
   let mediaRecorder;
   let audioChunks = [];
   let audioBlob = null;
 
-  // Nội dung các bài học
   const lessons = {
     1: "Hello. How are you?\nI'm fine, thank you.",
     2: "This is my mother. That is my father.",
     3: "I like apples. Do you like bananas?"
   };
 
-  // Gắn sự kiện chọn bài học trong mục lục
+  // Gắn sự kiện khi click menu ☰
+  menuBtn.addEventListener("click", () => {
+    document.getElementById("library").classList.toggle("hidden");
+  });
+
+  // Gắn sự kiện khi click nút quay lại
+  backBtn.addEventListener("click", () => {
+    document.getElementById("library").classList.add("hidden");
+  });
+
+  // Gắn sự kiện cho các mục bài học
   document.querySelectorAll("#lessonList a").forEach(link => {
     link.addEventListener("click", () => {
       const id = link.dataset.id;
       textarea.value = lessons[id];
       document.getElementById("library").classList.add("hidden");
     });
-  });
-
-  menuBtn.addEventListener("click", () => {
-    document.getElementById("library").classList.toggle("hidden");
-  });
-
-  backBtn.addEventListener("click", () => {
-    document.getElementById("library").classList.add("hidden");
   });
 
   replayBtn.addEventListener("click", () => {
