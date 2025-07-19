@@ -1,49 +1,22 @@
-const fileInput = document.getElementById('fileInput');
-const fileList = document.getElementById('fileList');
-const viewer = document.getElementById('viewer');
-const dbName = 'VPM_DB', storeName = 'files';
+document.getElementById("download").addEventListener("click", function () {
+    const content = document.getElementById("text").value;
+    const filename = "downloaded.html";
+    const blob = new Blob([content], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
 
-// Init IndexedDB
-const openDB = indexedDB.open(dbName, 1);
-openDB.onupgradeneeded = e => {
-  e.target.result.createObjectStore(storeName, { keyPath: 'name' });
-};
-openDB.onsuccess = e => {
-  const db = e.target.result;
-  loadFiles(db);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
 
-  fileInput.addEventListener('change', event => {
-    const file = event.target.files[0];
-    if (!file || !file.name.endsWith('.html')) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const content = reader.result;
-      const tx = db.transaction(storeName, 'readwrite');
-      const store = tx.objectStore(storeName);
-      store.put({ name: file.name, content });
-      tx.oncomplete = () => loadFiles(db);
-    };
-    reader.readAsText(file);
-  });
+    // Hiển thị tên file đã tải và gán link
+    const linkDiv = document.getElementById("download-name");
+    linkDiv.innerHTML = `<a href="${url}" target="_blank">${filename}</a>`;
+});
 
-  function loadFiles(db) {
-    const tx = db.transaction(storeName, 'readonly');
-    const store = tx.objectStore(storeName);
-    const req = store.getAll();
-    req.onsuccess = () => {
-      fileList.innerHTML = '';
-      req.result.forEach(file => {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.textContent = file.name;
-        a.href = '#';
-        a.onclick = () => {
-          const blob = new Blob([file.content], { type: 'text/html' });
-          viewer.src = URL.createObjectURL(blob);
-        };
-        li.appendChild(a);
-        fileList.appendChild(li);
-      });
-    };
-  }
-};
+// Đăng ký service worker (PWA)
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('SW registered', reg))
+        .catch(err => console.error('SW registration failed', err));
+}
