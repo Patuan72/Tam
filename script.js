@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   const replayBtn = document.getElementById("replay");
   const micBtn = document.getElementById("mic");
@@ -68,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("menuBtn").addEventListener("click", () => {
+    loadLibrary();
     const lib = document.getElementById("library");
     lib.classList.toggle("hidden");
   });
@@ -83,40 +85,41 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log('Tốc độ được chọn:', ['Chậm', 'Trung bình', 'Nhanh'][index]);
     });
   });
-
-  // Xoá logic liên quan đến curriculumData và nạp nội dung mẫu
 });
 
-
-// Sau khi DOM đã load, thêm "Giáo trình" nếu chưa có
-window.addEventListener("load", () => {
+// Load tài liệu đã tải từ IndexedDB
+function loadLibrary() {
   const dbName = 'VPM_DB';
   const storeName = 'files';
-  const content = `<html><body><h1>Chào mừng đến với Giáo trình</h1><p>Đây là nội dung mẫu của giáo trình bạn đã tải.</p></body></html>`;
+  const downloadedList = document.getElementById("downloadedList");
+  downloadedList.innerHTML = "";
 
   const openDB = indexedDB.open(dbName, 1);
+  openDB.onupgradeneeded = (e) => {
+    const db = e.target.result;
+    db.createObjectStore(storeName, { keyPath: "name" });
+  };
   openDB.onsuccess = (e) => {
     const db = e.target.result;
     const tx = db.transaction(storeName, 'readonly');
     const store = tx.objectStore(storeName);
-    const getReq = store.get("Giáo trình");
-    getReq.onsuccess = () => {
-      if (!getReq.result) {
-        const txAdd = db.transaction(storeName, 'readwrite');
-        txAdd.objectStore(storeName).put({ name: "Giáo trình", content });
-        txAdd.oncomplete = () => {
-          const li = document.createElement('li');
-          const a = document.createElement('a');
-          a.textContent = "Giáo trình";
-          a.href = '#';
-          a.onclick = () => {
-            const blob = new Blob([content], { type: 'text/html' });
-            document.getElementById("viewer").src = URL.createObjectURL(blob);
-          };
-          li.appendChild(a);
-          document.getElementById('downloadedList').appendChild(li);
-        };
-      }
+    const getAll = store.getAll();
+    getAll.onsuccess = () => {
+      getAll.result.forEach(file => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#";
+        a.textContent = "📄 " + file.name;
+        a.addEventListener("click", () => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(file.content, "text/html");
+          const text = doc.body.textContent.trim();
+          document.querySelector("textarea").value = text;
+          document.getElementById("library").classList.add("hidden");
+        });
+        li.appendChild(a);
+        downloadedList.appendChild(li);
+      });
     };
   };
-});
+}
