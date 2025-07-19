@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const backBtn = document.getElementById("backBtn");
   const viewer = document.getElementById("viewer");
   const giaotrinhLink = document.getElementById("giaotrinhLink");
-  const fileInput = document.getElementById("fileInput");
+  const fetchAndSave = document.getElementById("fetchAndSave");
 
   let mediaRecorder;
   let audioChunks = [];
@@ -80,15 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("library").classList.add("hidden");
   });
 
-  document.querySelectorAll('.dot').forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-      document.querySelectorAll('.dot').forEach(d => d.classList.remove('selected'));
-      dot.classList.add('selected');
-      console.log('Tốc độ được chọn:', ['Chậm', 'Trung bình', 'Nhanh'][index]);
-    });
-  });
-
-  // IndexedDB logic để lưu và xem file giáo trình
   const dbName = 'VPM_DB';
   const storeName = 'giaotrinh';
   let db;
@@ -116,17 +107,19 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   });
 
-  fileInput.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (file && file.name.endsWith(".html")) {
-      const reader = new FileReader();
-      reader.onload = function(evt) {
+  fetchAndSave.addEventListener("click", (e) => {
+    e.preventDefault();
+    const fileUrl = "https://drive.google.com/uc?export=download&id=138bZpmcvtkNAyp5_uRBOS5OnjbcQcmRL";
+    fetch(fileUrl)
+      .then(res => res.text())
+      .then(content => {
         const tx = db.transaction(storeName, "readwrite");
         const store = tx.objectStore(storeName);
-        store.put(evt.target.result, "file");
-        alert("Đã lưu giáo trình!");
-      };
-      reader.readAsText(file);
-    }
+        store.put(content, "file");
+        alert("Đã tải và lưu giáo trình!");
+      }).catch(err => {
+        alert("Lỗi khi tải file giáo trình.");
+        console.error(err);
+      });
   });
 });
