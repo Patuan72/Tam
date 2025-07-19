@@ -11,30 +11,23 @@ document.addEventListener("DOMContentLoaded", () => {
   let audioChunks = [];
   let audioBlob = null;
 
-  const lessons = {
-    1: "Hello. How are you?\nI'm fine, thank you.",
-    2: "This is my mother. That is my father.",
-    3: "I like apples. Do you like bananas?"
-  };
+  // Gán nội dung mẫu
+  textarea.value = "Unit 1\nHello. How are you?";
 
-  // Gắn sự kiện khi click menu ☰
-  menuBtn.addEventListener("click", () => {
-    document.getElementById("library").classList.toggle("hidden");
-  });
+  // Phát audio mẫu khi load (test)
+  const audio = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+  audio.play();
 
-  // Gắn sự kiện khi click nút quay lại
-  backBtn.addEventListener("click", () => {
-    document.getElementById("library").classList.add("hidden");
-  });
+  // Thư viện (nếu giữ lại)
+  if (menuBtn && backBtn) {
+    menuBtn.addEventListener("click", () => {
+      document.getElementById("library").classList.toggle("hidden");
+    });
 
-  // Gắn sự kiện cho các mục bài học
-  document.querySelectorAll("#lessonList a").forEach(link => {
-    link.addEventListener("click", () => {
-      const id = link.dataset.id;
-      textarea.value = lessons[id];
+    backBtn.addEventListener("click", () => {
       document.getElementById("library").classList.add("hidden");
     });
-  });
+  }
 
   replayBtn.addEventListener("click", () => {
     if (!audioBlob) {
