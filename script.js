@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let audioChunks = [];
   let audioBlob = null;
 
-  // Gắn nội dung mặc định vào textarea
   textarea.value = "Hello. How are you?\nI'm fine, thank you.\nNice to meet you.";
 
   replayBtn.addEventListener("click", () => {
@@ -65,10 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    saveBtn.textContent = "✅";
-    setTimeout(() => {
-      saveBtn.textContent = "💾";
-    }, 1000);
+    saveBtn.textContent = "💾";
   });
 
   document.querySelectorAll('.dot').forEach((dot, index) => {
