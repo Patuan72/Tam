@@ -5,25 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveBtn = document.getElementById("save");
   const textarea = document.querySelector("textarea");
 
-  const sentences = [
-    "Hello. How are you?",
-    "I'm fine, thank you.",
-    "What's your name?",
-    "My name is Anna.",
-    "Nice to meet you!"
-  ];
-
-  let current = 0;
-  textarea.value = sentences[current];
-
   let mediaRecorder;
   let audioChunks = [];
   let audioBlob = null;
 
-  function showSentence(index) {
-    textarea.value = sentences[index];
-    audioBlob = null;
-  }
+  // Gắn nội dung mặc định vào textarea
+  textarea.value = "Hello. How are you?\nI'm fine, thank you.\nNice to meet you.";
 
   replayBtn.addEventListener("click", () => {
     if (!audioBlob) {
@@ -84,13 +71,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   });
 
-  document.getElementById("nextBtn").addEventListener("click", () => {
-    current = (current + 1) % sentences.length;
-    showSentence(current);
-  });
-
-  document.getElementById("prevBtn").addEventListener("click", () => {
-    current = (current - 1 + sentences.length) % sentences.length;
-    showSentence(current);
+  document.querySelectorAll('.dot').forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+      document.querySelectorAll('.dot').forEach(d => d.classList.remove('selected'));
+      dot.classList.add('selected');
+      console.log('Tốc độ được chọn:', ['Chậm', 'Trung bình', 'Nhanh'][index]);
+    });
   });
 });
