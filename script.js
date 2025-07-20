@@ -1,134 +1,149 @@
 
-let currentSentence = "";
-let isRecording = false;
-let mediaRecorder;
-let recordedChunks = [];
-let recognition;
+document.addEventListener("DOMContentLoaded", () => {
+  const micBtn = document.getElementById("mic");
+  const replayBtn = document.getElementById("replay");
+  const saveBtn = document.getElementById("save");
+  const transcriptBox = document.getElementById("transcript");
+  const scoreBox = document.querySelector(".score");
+  const sentenceList = document.getElementById("sentenceList");
+  const menuBtn = document.getElementById("menuBtn");
+  const libraryPanel = document.getElementById("library");
+  const backBtn = document.getElementById("backBtn");
 
-const micBtn = document.getElementById("micBtn");
-const replayBtn = document.getElementById("replayBtn");
-const saveBtn = document.getElementById("saveBtn");
-const scoreDisplay = document.getElementById("score");
-const transcriptDisplay = document.getElementById("transcript");
-const menuPanel = document.getElementById("menuPanel");
-const unitList = document.getElementById("unitList");
-const contentBox = document.getElementById("contentBox");
+  let currentSentence = "";
+  let currentRate = 1.0;
+  let audioBlob = null;
+  let mediaRecorder;
+  let audioChunks = [];
 
-function toggleMenu() {
-  if (menuPanel.style.display === "block") {
-    menuPanel.style.display = "none";
-  } else {
-    menuPanel.style.display = "block";
+  // Hiển thị mở rộng nếu class .text-label được thêm vào
+  function toggleLabelMode(show) {
+    document.querySelectorAll(".icon").forEach(btn => {
+      if (show) btn.classList.add("text-label");
+      else btn.classList.remove("text-label");
+    });
   }
-}
 
-function calculateScore(expected, actual) {
-  const expectedWords = expected.toLowerCase().split(" ");
-  const actualWords = actual.toLowerCase().split(" ");
-  let matches = 0;
-  expectedWords.forEach((word, i) => {
-    if (actualWords[i] === word) matches++;
+  toggleLabelMode(true); // bật chế độ hiển thị icon + chữ
+
+  // Toggle thư viện
+  menuBtn.addEventListener("click", () => {
+    libraryPanel.classList.remove("hidden");
   });
-  return Math.round((matches / expectedWords.length) * 100);
-}
 
-function initRecognition() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-  recognition.lang = "en-US";
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
+  backBtn.addEventListener("click", () => {
+    libraryPanel.classList.add("hidden");
+  });
 
-  recognition.onresult = (event) => {
-    const said = event.results[0][0].transcript;
-    transcriptDisplay.textContent = "🗣 " + said;
-    const score = calculateScore(currentSentence, said);
-    scoreDisplay.textContent = score + " / 100";
-  };
+  // Ghi âm
+  micBtn.addEventListener("click", async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
 
-  recognition.onerror = (e) => {
-    transcriptDisplay.textContent = "❌ Không thể nhận diện";
-  };
-}
-
-async function startMic() {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  mediaRecorder = new MediaRecorder(stream);
-  recordedChunks = [];
-
-  mediaRecorder.ondataavailable = (e) => {
-    if (e.data.size > 0) recordedChunks.push(e.data);
-  };
-
-  mediaRecorder.onstop = () => {
-    const blob = new Blob(recordedChunks, { type: "audio/webm" });
-    const audioURL = URL.createObjectURL(blob);
-
-    replayBtn.onclick = () => {
-      const audio = new Audio(audioURL);
-      audio.play();
+    mediaRecorder.ondataavailable = e => {
+      if (e.data.size > 0) audioChunks.push(e.data);
     };
 
-    saveBtn.onclick = () => {
-      const a = document.createElement("a");
-      a.href = audioURL;
-      a.download = "recording.webm";
-      a.click();
+    mediaRecorder.onstop = () => {
+      audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+      stream.getTracks().forEach(track => track.stop());
     };
-  };
 
-  mediaRecorder.start();
-  recognition.start();
-}
+    mediaRecorder.start();
+    setTimeout(() => mediaRecorder.stop(), 4000);
+  });
 
-function stopMic() {
-  mediaRecorder.stop();
-  recognition.stop();
-}
+  // Replay
+  replayBtn.addEventListener("click", () => {
+    if (!audioBlob) return alert("Chưa có bản ghi.");
+    const audio = new Audio(URL.createObjectURL(audioBlob));
+    audio.play();
+  });
 
-micBtn.onclick = async () => {
-  if (!isRecording) {
-    isRecording = true;
-    micBtn.textContent = "⏹️";
-    initRecognition();
-    await startMic();
-  } else {
-    isRecording = false;
-    micBtn.textContent = "🎤";
-    stopMic();
-  }
-};
+  // Save
+  saveBtn.addEventListener("click", () => {
+    if (!audioBlob) return alert("Chưa có bản ghi để lưu.");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(audioBlob);
+    a.download = "recording.wav";
+    a.click();
+  });
 
-async function loadUnits() {
-  const files = ["unit1.json", "unit2.json"];
-  let combined = [];
+  // Tốc độ
+  document.querySelectorAll(".dot").forEach((dot, index) => {
+    dot.addEventListener("click", () => {
+      document.querySelectorAll(".dot").forEach(d => d.classList.remove("selected"));
+      dot.classList.add("selected");
+      currentRate = [0.6, 1.0, 1.4][index];
+    });
+  });
 
-  for (const file of files) {
-    try {
-      const res = await fetch(file);
+  // Chọn câu
+  document.querySelectorAll("#downloadedList a").forEach(link => {
+    link.addEventListener("click", async e => {
+      e.preventDefault();
+      const res = await fetch(link.dataset.unit);
       const data = await res.json();
-      combined = combined.concat(data);
-    } catch (err) {
-      console.error("Lỗi tải", file);
-    }
+      sentenceList.innerHTML = "";
+      data.sentences.forEach((sentence, i) => {
+        const div = document.createElement("div");
+        div.textContent = (i + 1) + ". " + sentence;
+        div.className = "sentence-item";
+        div.addEventListener("click", () => {
+          currentSentence = sentence;
+          speakSentence(sentence);
+        });
+        sentenceList.appendChild(div);
+      });
+      libraryPanel.classList.add("hidden");
+    });
+  });
+
+  function speakSentence(sentence) {
+    const utterance = new SpeechSynthesisUtterance(sentence);
+    utterance.lang = "en-US";
+    utterance.rate = currentRate;
+    speechSynthesis.speak(utterance);
   }
 
-  unitList.innerHTML = "";
-  combined.forEach((item, idx) => {
-    const li = document.createElement("li");
-    li.textContent = item.en;
-    li.onclick = () => {
-      contentBox.value = item.en;
-      currentSentence = item.en;
-      menuPanel.style.display = "none";
-      transcriptDisplay.textContent = "";
-      scoreDisplay.textContent = "";
-    };
-    unitList.appendChild(li);
-  });
-}
+  // Nhận dạng giọng nói
+  if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
 
-window.onload = () => {
-  currentSentence = "How are you today";
-  loadUnits();
-};
+    micBtn.addEventListener("dblclick", () => {
+      if (!currentSentence) return alert("Chọn một câu trước khi chấm điểm.");
+      transcriptBox.textContent = "🎙 Listening...";
+      recognition.start();
+    });
+
+    recognition.onresult = event => {
+      const transcript = event.results[0][0].transcript;
+      transcriptBox.textContent = "🗣 " + transcript;
+      const score = compareSentences(currentSentence, transcript);
+      scoreBox.textContent = score;
+    };
+
+    recognition.onerror = e => {
+      transcriptBox.textContent = "❌ Lỗi: " + e.error;
+      scoreBox.textContent = "0";
+    };
+  }
+
+  function clean(text) {
+    return text.toLowerCase().replace(/[.,!?]/g, "").trim();
+  }
+
+  function compareSentences(expected, actual) {
+    const expectedWords = clean(expected).split(" ");
+    const actualWords = clean(actual).split(" ");
+    let match = 0;
+    expectedWords.forEach((word, i) => {
+      if (actualWords[i] && actualWords[i] === word) match++;
+    });
+    return Math.round((match / expectedWords.length) * 100);
+  }
+});
