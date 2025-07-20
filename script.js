@@ -1,22 +1,29 @@
 
 
-      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = 'en-US';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
+let currentSentence = ""; // câu đang chọn
+let recognitionSupported = false;
+let recognition;
 
-      let currentSentence = ""; // câu đang chọn
+try {
+  recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognitionSupported = true;
+} catch (e) {
+  console.warn("Trình duyệt không hỗ trợ SpeechRecognition:", e);
+}
 
-      function compareSentences(expected, actual) {
-        const clean = s => s.toLowerCase().replace(/[.,!?]/g, "").trim();
-        const expectedWords = clean(expected).split(" ");
-        const actualWords = clean(actual).split(" ");
-        let matchCount = 0;
-        expectedWords.forEach((word, i) => {
-          if (actualWords[i] && actualWords[i] === word) matchCount++;
-        });
-        return Math.round((matchCount / expectedWords.length) * 100);
-      }
+function compareSentences(expected, actual) {
+  const clean = s => s.toLowerCase().replace(/[.,!?]/g, "").trim();
+  const expectedWords = clean(expected).split(" ");
+  const actualWords = clean(actual).split(" ");
+  let matchCount = 0;
+  expectedWords.forEach((word, i) => {
+    if (actualWords[i] && actualWords[i] === word) matchCount++;
+  });
+  return Math.round((matchCount / expectedWords.length) * 100);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   const replayBtn = document.getElementById("replay");
@@ -63,17 +70,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const audio = new Audio(audioURL);
         audio.play();
 
-        recognition.start();
-        recognition.onresult = (event) => {
-          const transcript = event.results[0][0].transcript;
-          console.log("Bạn nói:", transcript);
-          const score = compareSentences(currentSentence, transcript);
-          document.querySelector(".score").textContent = score;
-        };
-        recognition.onerror = (event) => {
-          console.error("Lỗi nhận dạng:", event.error);
-          document.querySelector(".score").textContent = "0";
-        };
+        if (recognitionSupported && currentSentence) {
+          recognition.start();
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            console.log("Bạn nói:", transcript);
+            const score = compareSentences(currentSentence, transcript);
+            document.querySelector(".score").textContent = score;
+          };
+          recognition.onerror = (event) => {
+            console.error("Lỗi nhận dạng:", event.error);
+            document.querySelector(".score").textContent = "0";
+          };
+        } else {
+          console.warn("Không thể chấm điểm: SpeechRecognition không khả dụng hoặc chưa chọn câu.");
+        }
     
         audioBlob = new Blob(audioChunks, { type: "audio/wav" });
         const audioURL = URL.createObjectURL(audioBlob);
