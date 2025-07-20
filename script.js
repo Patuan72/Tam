@@ -1,16 +1,20 @@
 
 document.addEventListener("DOMContentLoaded", () => {
+  const replayBtn = document.getElementById("replay");
   const micBtn = document.getElementById("mic");
+  const saveBtn = document.getElementById("save");
   const sentenceList = document.getElementById("sentenceList");
   const scoreBox = document.querySelector(".score");
   const transcriptBox = document.getElementById("transcript");
 
+  let mediaRecorder;
+  let audioChunks = [];
+  let audioBlob = null;
   let currentRate = 1.0;
   let currentSentence = "";
 
   let recognitionSupported = false;
   let recognition;
-
   try {
     recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
@@ -32,9 +36,23 @@ document.addEventListener("DOMContentLoaded", () => {
     return Math.round((matchCount / expectedWords.length) * 100);
   }
 
+  replayBtn.addEventListener("click", () => {
+    if (!audioBlob) {
+      alert("Chưa có bản ghi âm nào để phát lại!");
+      return;
+    }
+    replayBtn.textContent = "⏳";
+    const audioURL = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioURL);
+    audio.play();
+    audio.onended = () => {
+      replayBtn.textContent = "🔁";
+    };
+  });
+
   micBtn.addEventListener("click", () => {
     if (!recognitionSupported) {
-      alert("Trình duyệt không hỗ trợ SpeechRecognition.");
+      alert("Trình duyệt không hỗ trợ nhận dạng giọng nói.");
       return;
     }
 
@@ -59,32 +77,22 @@ document.addEventListener("DOMContentLoaded", () => {
     scoreBox.textContent = "0";
   };
 
-  // Load câu từ JSON
-  document.querySelectorAll('#downloadedList a').forEach(link => {
-    link.addEventListener('click', async (e) => {
-      e.preventDefault();
-      const unitFile = link.getAttribute("data-unit");
-      const res = await fetch(unitFile);
-      const data = await res.json();
-
-      sentenceList.innerHTML = "";
-      data.sentences.forEach(sentence => {
-        const div = document.createElement("div");
-        div.textContent = sentence;
-        div.className = "sentence-item";
-        div.style.cursor = "pointer";
-        div.onclick = () => {
-          currentSentence = sentence;
-          const utterance = new SpeechSynthesisUtterance(sentence);
-          utterance.rate = currentRate;
-          utterance.volume = 1.0;
-          speechSynthesis.speak(utterance);
-        };
-        sentenceList.appendChild(div);
-      });
-
-      document.getElementById("library").classList.add("hidden");
-    });
+  saveBtn.addEventListener("click", () => {
+    if (!audioBlob) {
+      alert("Bạn cần ghi âm trước khi lưu!");
+      return;
+    }
+    const url = URL.createObjectURL(audioBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ghi-am.wav";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    saveBtn.textContent = "✅";
+    setTimeout(() => {
+      saveBtn.textContent = "💾";
+    }, 1000);
   });
 
   document.getElementById("menuBtn").addEventListener("click", () => {
@@ -101,6 +109,33 @@ document.addEventListener("DOMContentLoaded", () => {
       dot.classList.add('selected');
       const rates = [0.6, 1.0, 1.4];
       currentRate = rates[index];
+    });
+  });
+
+  document.querySelectorAll('#downloadedList a').forEach(link => {
+    link.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const unitFile = link.getAttribute("data-unit");
+      const res = await fetch(unitFile);
+      const data = await res.json();
+
+      sentenceList.innerHTML = "";
+      data.sentences.forEach(sentence => {
+        const div = document.createElement("div");
+        div.textContent = sentence;
+        div.className = "sentence-item";
+        div.style.cursor = "pointer";
+        div.onclick = () => {
+          currentSentence = sentence;
+          const utterance = new SpeechSynthesisUtterance(sentence);
+          utterance.volume = 1.0;
+          utterance.rate = currentRate;
+          speechSynthesis.speak(utterance);
+        };
+        sentenceList.appendChild(div);
+      });
+
+      document.getElementById("library").classList.add("hidden");
     });
   });
 });

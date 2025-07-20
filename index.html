@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VPM – Clean Recognition</title>
+  <title>VPM</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
     <div class="logo">VPM</div>
-    <div class="score">--</div>
+    <div class="score">85</div>
     <div class="speed-selector">
       <span class="dot selected">●</span>
       <span class="dot">●</span>
@@ -21,11 +21,13 @@
 
   <main>
     <div id="sentenceList"></div>
-    <div id="transcript" style="margin-top:20px;font-size:18px;color:#00796b;"></div>
+    <div id="transcript" style="margin-top:10px; font-size:16px; color:#00796b;"></div>
   </main>
 
   <footer>
+    <button class="icon" id="replay">🔁</button>
     <button class="icon" id="mic">🎤</button>
+    <button class="icon" id="save">💾</button>
   </footer>
 
   <div id="library" class="hidden">
