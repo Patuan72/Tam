@@ -1,6 +1,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-  const micBtn = document.getElementById("mic");
+  const recordBtn = document.getElementById("record");
+  const checkBtn = document.getElementById("check");
   const replayBtn = document.getElementById("replay");
   const saveBtn = document.getElementById("save");
   const transcriptBox = document.getElementById("transcript");
@@ -16,16 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let mediaRecorder;
   let audioChunks = [];
 
-  // Hiển thị mở rộng nếu class .text-label được thêm vào
-  function toggleLabelMode(show) {
-    document.querySelectorAll(".icon").forEach(btn => {
-      if (show) btn.classList.add("text-label");
-      else btn.classList.remove("text-label");
-    });
-  }
-
-  toggleLabelMode(true); // bật chế độ hiển thị icon + chữ
-
   // Toggle thư viện
   menuBtn.addEventListener("click", () => {
     libraryPanel.classList.remove("hidden");
@@ -36,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Ghi âm
-  micBtn.addEventListener("click", async () => {
+  recordBtn.addEventListener("click", async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
     audioChunks = [];
@@ -114,9 +105,9 @@ document.addEventListener("DOMContentLoaded", () => {
     recognition.lang = "en-US";
     recognition.interimResults = false;
 
-    micBtn.addEventListener("dblclick", () => {
+    checkBtn.addEventListener("click", () => {
       if (!currentSentence) return alert("Chọn một câu trước khi chấm điểm.");
-      transcriptBox.textContent = "🎙 Listening...";
+      transcriptBox.textContent = "🎙 Đang nghe...";
       recognition.start();
     });
 
@@ -124,12 +115,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const transcript = event.results[0][0].transcript;
       transcriptBox.textContent = "🗣 " + transcript;
       const score = compareSentences(currentSentence, transcript);
-      scoreBox.textContent = score;
+      scoreBox.textContent = "Điểm: " + score;
     };
 
     recognition.onerror = e => {
       transcriptBox.textContent = "❌ Lỗi: " + e.error;
-      scoreBox.textContent = "0";
+      scoreBox.textContent = "Điểm: 0";
     };
   }
 
