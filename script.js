@@ -15,8 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let audioBlob = null;
   let mediaRecorder;
   let audioChunks = [];
+  let isRecording = false;
 
-  // Hiển thị mở rộng nếu class .text-label được thêm vào
   function toggleLabelMode(show) {
     document.querySelectorAll(".icon").forEach(btn => {
       if (show) btn.classList.add("text-label");
@@ -24,9 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  toggleLabelMode(true); // bật chế độ hiển thị icon + chữ
+  toggleLabelMode(true);
 
-  // Toggle thư viện
   menuBtn.addEventListener("click", () => {
     libraryPanel.classList.remove("hidden");
   });
@@ -35,33 +34,52 @@ document.addEventListener("DOMContentLoaded", () => {
     libraryPanel.classList.add("hidden");
   });
 
-  // Ghi âm
   micBtn.addEventListener("click", async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-    audioChunks = [];
+    if (!currentSentence) {
+      alert("Hãy chọn một câu trước khi ghi âm.");
+      return;
+    }
 
-    mediaRecorder.ondataavailable = e => {
-      if (e.data.size > 0) audioChunks.push(e.data);
-    };
+    if (!isRecording) {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      transcriptBox.textContent = "🎙 Đang ghi âm... (bấm lại để dừng)";
+      isRecording = true;
 
-    mediaRecorder.onstop = () => {
-      audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-      stream.getTracks().forEach(track => track.stop());
-    };
+      mediaRecorder.ondataavailable = e => {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
 
-    mediaRecorder.start();
-    setTimeout(() => mediaRecorder.stop(), 4000);
+      mediaRecorder.onstop = () => {
+        const audioBlobTemp = new Blob(audioChunks, { type: "audio/wav" });
+        audioBlob = audioBlobTemp;
+        stream.getTracks().forEach(track => track.stop());
+
+        const audio = new Audio(URL.createObjectURL(audioBlob));
+        audio.play();
+
+        transcriptBox.textContent = "🔁 Đang phát lại...";
+
+        audio.onended = () => {
+          transcriptBox.textContent = "🧠 Đang nhận diện...";
+          recognition.start();
+        };
+      };
+
+      mediaRecorder.start();
+    } else {
+      isRecording = false;
+      mediaRecorder.stop();
+    }
   });
 
-  // Replay
   replayBtn.addEventListener("click", () => {
     if (!audioBlob) return alert("Chưa có bản ghi.");
     const audio = new Audio(URL.createObjectURL(audioBlob));
     audio.play();
   });
 
-  // Save
   saveBtn.addEventListener("click", () => {
     if (!audioBlob) return alert("Chưa có bản ghi để lưu.");
     const a = document.createElement("a");
@@ -70,7 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
     a.click();
   });
 
-  // Tốc độ
   document.querySelectorAll(".dot").forEach((dot, index) => {
     dot.addEventListener("click", () => {
       document.querySelectorAll(".dot").forEach(d => d.classList.remove("selected"));
@@ -79,7 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Chọn câu
   document.querySelectorAll("#downloadedList a").forEach(link => {
     link.addEventListener("click", async e => {
       e.preventDefault();
@@ -107,18 +123,11 @@ document.addEventListener("DOMContentLoaded", () => {
     speechSynthesis.speak(utterance);
   }
 
-  // Nhận dạng giọng nói
   if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = "en-US";
     recognition.interimResults = false;
-
-    micBtn.addEventListener("dblclick", () => {
-      if (!currentSentence) return alert("Chọn một câu trước khi chấm điểm.");
-      transcriptBox.textContent = "🎙 Listening...";
-      recognition.start();
-    });
 
     recognition.onresult = event => {
       const transcript = event.results[0][0].transcript;
