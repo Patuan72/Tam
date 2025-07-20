@@ -1,18 +1,16 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-  const replayBtn = document.getElementById("replay");
   const micBtn = document.getElementById("mic");
-  const saveBtn = document.getElementById("save");
   const sentenceList = document.getElementById("sentenceList");
+  const scoreBox = document.querySelector(".score");
+  const transcriptBox = document.getElementById("transcript");
 
-  let mediaRecorder;
-  let audioChunks = [];
-  let audioBlob = null;
   let currentRate = 1.0;
   let currentSentence = "";
 
   let recognitionSupported = false;
   let recognition;
+
   try {
     recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
@@ -20,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     recognition.maxAlternatives = 1;
     recognitionSupported = true;
   } catch (e) {
-    console.warn("SpeechRecognition not supported:", e);
+    transcriptBox.textContent = "⚠️ Trình duyệt không hỗ trợ SpeechRecognition.";
   }
 
   function compareSentences(expected, actual) {
@@ -34,117 +32,34 @@ document.addEventListener("DOMContentLoaded", () => {
     return Math.round((matchCount / expectedWords.length) * 100);
   }
 
-  replayBtn.addEventListener("click", () => {
-    if (!audioBlob) {
-      alert("Chưa có bản ghi âm nào để phát lại!");
+  micBtn.addEventListener("click", () => {
+    if (!recognitionSupported) {
+      alert("Trình duyệt không hỗ trợ SpeechRecognition.");
       return;
     }
-    replayBtn.textContent = "⏳";
-    const audioURL = URL.createObjectURL(audioBlob);
-    const audio = new Audio(audioURL);
-    audio.play();
-    audio.onended = () => {
-      replayBtn.textContent = "🔁";
-    };
-  });
 
-  micBtn.addEventListener("click", async () => {
-    if (micBtn.textContent === "🎤") {
-      micBtn.textContent = "🔴";
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder = new MediaRecorder(stream);
-      audioChunks = [];
-
-      mediaRecorder.ondataavailable = event => {
-        if (event.data.size > 0) {
-          audioChunks.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = () => {
-        audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-
-        // Giải phóng mic hoàn toàn trước khi recognition
-        stream.getTracks().forEach(track => track.stop());
-
-        if (recognitionSupported && currentSentence) {
-          recognition.start();
-          recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            const score = compareSentences(currentSentence, transcript);
-            document.querySelector(".score").textContent = score;
-            const transcriptBox = document.querySelector("#transcript");
-            if (transcriptBox) {
-              transcriptBox.textContent = "🗣 Bạn nói: " + transcript;
-            }
-          };
-          recognition.onerror = (event) => {
-            const transcriptBox = document.querySelector("#transcript");
-            if (transcriptBox) {
-              transcriptBox.textContent = "⚠️ Không thể nhận dạng giọng nói.";
-            }
-            document.querySelector(".score").textContent = "0";
-          };
-        }
-        audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-
-        if (recognitionSupported && currentSentence) {
-          recognition.start();
-          recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            const score = compareSentences(currentSentence, transcript);
-            document.querySelector(".score").textContent = score;
-          };
-          recognition.onerror = (event) => {
-            console.error("Lỗi nhận dạng:", event.error);
-            document.querySelector(".score").textContent = "0";
-          };
-        }
-      };
-
-      mediaRecorder.start();
-    } else {
-      micBtn.textContent = "🎤";
-      mediaRecorder.stop();
-    }
-  });
-
-  saveBtn.addEventListener("click", () => {
-    if (!audioBlob) {
-      alert("Bạn cần ghi âm trước khi lưu!");
+    if (!currentSentence) {
+      transcriptBox.textContent = "⚠️ Bạn chưa chọn câu.";
       return;
     }
-    const url = URL.createObjectURL(audioBlob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "ghi-am.wav";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    saveBtn.textContent = "✅";
-    setTimeout(() => {
-      saveBtn.textContent = "💾";
-    }, 1000);
+
+    transcriptBox.textContent = "🎙 Đang nghe...";
+    recognition.start();
   });
 
-  document.getElementById("menuBtn").addEventListener("click", () => {
-    const lib = document.getElementById("library");
-    lib.classList.toggle("hidden");
-  });
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    transcriptBox.textContent = "🗣 Bạn nói: " + transcript;
+    const score = compareSentences(currentSentence, transcript);
+    scoreBox.textContent = score;
+  };
 
-  document.getElementById("backBtn").addEventListener("click", () => {
-    document.getElementById("library").classList.add("hidden");
-  });
+  recognition.onerror = (event) => {
+    transcriptBox.textContent = "⚠️ Lỗi nhận dạng: " + event.error;
+    scoreBox.textContent = "0";
+  };
 
-  document.querySelectorAll('.dot').forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-      document.querySelectorAll('.dot').forEach(d => d.classList.remove('selected'));
-      dot.classList.add('selected');
-      const rates = [0.6, 1.0, 1.4];
-      currentRate = rates[index];
-    });
-  });
-
+  // Load câu từ JSON
   document.querySelectorAll('#downloadedList a').forEach(link => {
     link.addEventListener('click', async (e) => {
       e.preventDefault();
@@ -161,14 +76,31 @@ document.addEventListener("DOMContentLoaded", () => {
         div.onclick = () => {
           currentSentence = sentence;
           const utterance = new SpeechSynthesisUtterance(sentence);
-          utterance.volume = 1.0;
           utterance.rate = currentRate;
+          utterance.volume = 1.0;
           speechSynthesis.speak(utterance);
         };
         sentenceList.appendChild(div);
       });
 
       document.getElementById("library").classList.add("hidden");
+    });
+  });
+
+  document.getElementById("menuBtn").addEventListener("click", () => {
+    document.getElementById("library").classList.toggle("hidden");
+  });
+
+  document.getElementById("backBtn").addEventListener("click", () => {
+    document.getElementById("library").classList.add("hidden");
+  });
+
+  document.querySelectorAll('.dot').forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+      document.querySelectorAll('.dot').forEach(d => d.classList.remove('selected'));
+      dot.classList.add('selected');
+      const rates = [0.6, 1.0, 1.4];
+      currentRate = rates[index];
     });
   });
 });
