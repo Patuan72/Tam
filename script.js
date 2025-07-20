@@ -3,10 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const micBtn = document.getElementById("mic");
   const replayBtn = document.getElementById("replay");
   const saveBtn = document.getElementById("save");
-  const sentenceList = document.getElementById("sentenceList");
   const transcriptBox = document.getElementById("transcript");
   const scoreBox = document.querySelector(".score");
-  const unitLinks = document.querySelectorAll("#downloadedList a");
+  const sentenceList = document.getElementById("sentenceList");
   const menuBtn = document.getElementById("menuBtn");
   const libraryPanel = document.getElementById("library");
   const backBtn = document.getElementById("backBtn");
@@ -17,6 +16,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let mediaRecorder;
   let audioChunks = [];
 
+  // Hiển thị mở rộng nếu class .text-label được thêm vào
+  function toggleLabelMode(show) {
+    document.querySelectorAll(".icon").forEach(btn => {
+      if (show) btn.classList.add("text-label");
+      else btn.classList.remove("text-label");
+    });
+  }
+
+  toggleLabelMode(true); // bật chế độ hiển thị icon + chữ
+
   // Toggle thư viện
   menuBtn.addEventListener("click", () => {
     libraryPanel.classList.remove("hidden");
@@ -25,14 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
   backBtn.addEventListener("click", () => {
     libraryPanel.classList.add("hidden");
   });
-
-  // Giọng đọc mẫu
-  function speakSentence(sentence) {
-    const utterance = new SpeechSynthesisUtterance(sentence);
-    utterance.lang = "en-US";
-    utterance.rate = currentRate;
-    speechSynthesis.speak(utterance);
-  }
 
   // Ghi âm
   micBtn.addEventListener("click", async () => {
@@ -53,14 +54,14 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => mediaRecorder.stop(), 4000);
   });
 
-  // Replay bản ghi
+  // Replay
   replayBtn.addEventListener("click", () => {
     if (!audioBlob) return alert("Chưa có bản ghi.");
     const audio = new Audio(URL.createObjectURL(audioBlob));
     audio.play();
   });
 
-  // Save bản ghi
+  // Save
   saveBtn.addEventListener("click", () => {
     if (!audioBlob) return alert("Chưa có bản ghi để lưu.");
     const a = document.createElement("a");
@@ -78,16 +79,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Hiển thị câu từ JSON
-  unitLinks.forEach(link => {
+  // Chọn câu
+  document.querySelectorAll("#downloadedList a").forEach(link => {
     link.addEventListener("click", async e => {
       e.preventDefault();
       const res = await fetch(link.dataset.unit);
       const data = await res.json();
       sentenceList.innerHTML = "";
-      data.sentences.forEach(sentence => {
+      data.sentences.forEach((sentence, i) => {
         const div = document.createElement("div");
-        div.textContent = sentence;
+        div.textContent = (i + 1) + ". " + sentence;
         div.className = "sentence-item";
         div.addEventListener("click", () => {
           currentSentence = sentence;
@@ -95,9 +96,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         sentenceList.appendChild(div);
       });
-      libraryPanel.classList.add("hidden"); // đóng thư viện sau khi chọn
+      libraryPanel.classList.add("hidden");
     });
   });
+
+  function speakSentence(sentence) {
+    const utterance = new SpeechSynthesisUtterance(sentence);
+    utterance.lang = "en-US";
+    utterance.rate = currentRate;
+    speechSynthesis.speak(utterance);
+  }
 
   // Nhận dạng giọng nói
   if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
@@ -120,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     recognition.onerror = e => {
-      transcriptBox.textContent = "❌ Lỗi nhận dạng: " + e.error;
+      transcriptBox.textContent = "❌ Lỗi: " + e.error;
       scoreBox.textContent = "0";
     };
   }
