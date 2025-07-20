@@ -7,12 +7,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const transcriptBox = document.getElementById("transcript");
   const scoreBox = document.querySelector(".score");
   const unitLinks = document.querySelectorAll("#downloadedList a");
+  const menuBtn = document.getElementById("menuBtn");
+  const libraryPanel = document.getElementById("library");
+  const backBtn = document.getElementById("backBtn");
 
   let currentSentence = "";
   let currentRate = 1.0;
   let audioBlob = null;
   let mediaRecorder;
   let audioChunks = [];
+
+  // Toggle thư viện
+  menuBtn.addEventListener("click", () => {
+    libraryPanel.classList.remove("hidden");
+  });
+
+  backBtn.addEventListener("click", () => {
+    libraryPanel.classList.add("hidden");
+  });
 
   // Giọng đọc mẫu
   function speakSentence(sentence) {
@@ -22,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     speechSynthesis.speak(utterance);
   }
 
-  // Ghi âm khi bấm mic
+  // Ghi âm
   micBtn.addEventListener("click", async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
@@ -38,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     mediaRecorder.start();
-    setTimeout(() => mediaRecorder.stop(), 4000); // ghi âm 4 giây
+    setTimeout(() => mediaRecorder.stop(), 4000);
   });
 
   // Replay bản ghi
@@ -57,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     a.click();
   });
 
-  // Chọn tốc độ
+  // Tốc độ
   document.querySelectorAll(".dot").forEach((dot, index) => {
     dot.addEventListener("click", () => {
       document.querySelectorAll(".dot").forEach(d => d.classList.remove("selected"));
@@ -66,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Tải và hiển thị câu
+  // Hiển thị câu từ JSON
   unitLinks.forEach(link => {
     link.addEventListener("click", async e => {
       e.preventDefault();
@@ -83,10 +95,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         sentenceList.appendChild(div);
       });
+      libraryPanel.classList.add("hidden"); // đóng thư viện sau khi chọn
     });
   });
 
-  // Nhận dạng và chấm điểm
+  // Nhận dạng giọng nói
   if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
