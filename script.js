@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentRate = 1.0;
   let currentSentence = "";
 
-  // SpeechRecognition setup
   let recognitionSupported = false;
   let recognition;
   try {
@@ -64,15 +63,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       mediaRecorder.onstop = () => {
         audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-        const audioURL = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioURL);
-        audio.play();
-        audio.onended = () => {
+
         if (recognitionSupported && currentSentence) {
           recognition.start();
           recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
-            console.log("Bạn nói:", transcript);
             const score = compareSentences(currentSentence, transcript);
             document.querySelector(".score").textContent = score;
           };
@@ -80,8 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Lỗi nhận dạng:", event.error);
             document.querySelector(".score").textContent = "0";
           };
-        } else {
-          console.warn("Không thể chấm điểm: chưa chọn câu hoặc trình duyệt không hỗ trợ.");
         }
       };
 
@@ -125,11 +118,9 @@ document.addEventListener("DOMContentLoaded", () => {
       dot.classList.add('selected');
       const rates = [0.6, 1.0, 1.4];
       currentRate = rates[index];
-      console.log('Tốc độ được chọn:', ['Chậm', 'Trung bình', 'Nhanh'][index], `(${currentRate})`);
     });
   });
 
-  // Xử lý khi bấm vào unit trong thư viện
   document.querySelectorAll('#downloadedList a').forEach(link => {
     link.addEventListener('click', async (e) => {
       e.preventDefault();
