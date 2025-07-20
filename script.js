@@ -10,6 +10,17 @@ const replayBtn = document.getElementById("replayBtn");
 const saveBtn = document.getElementById("saveBtn");
 const scoreDisplay = document.getElementById("score");
 const transcriptDisplay = document.getElementById("transcript");
+const menuPanel = document.getElementById("menuPanel");
+const unitList = document.getElementById("unitList");
+const contentBox = document.getElementById("contentBox");
+
+function toggleMenu() {
+  if (menuPanel.style.display === "block") {
+    menuPanel.style.display = "none";
+  } else {
+    menuPanel.style.display = "block";
+  }
+}
 
 function calculateScore(expected, actual) {
   const expectedWords = expected.toLowerCase().split(" ");
@@ -88,7 +99,36 @@ micBtn.onclick = async () => {
   }
 };
 
-// Dummy placeholder to test:
+async function loadUnits() {
+  const files = ["unit1.json", "unit2.json"];
+  let combined = [];
+
+  for (const file of files) {
+    try {
+      const res = await fetch(file);
+      const data = await res.json();
+      combined = combined.concat(data);
+    } catch (err) {
+      console.error("Lỗi tải", file);
+    }
+  }
+
+  unitList.innerHTML = "";
+  combined.forEach((item, idx) => {
+    const li = document.createElement("li");
+    li.textContent = item.en;
+    li.onclick = () => {
+      contentBox.value = item.en;
+      currentSentence = item.en;
+      menuPanel.style.display = "none";
+      transcriptDisplay.textContent = "";
+      scoreDisplay.textContent = "";
+    };
+    unitList.appendChild(li);
+  });
+}
+
 window.onload = () => {
   currentSentence = "How are you today";
+  loadUnits();
 };
