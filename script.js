@@ -1,4 +1,23 @@
 
+
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      let currentSentence = ""; // câu đang chọn
+
+      function compareSentences(expected, actual) {
+        const clean = s => s.toLowerCase().replace(/[.,!?]/g, "").trim();
+        const expectedWords = clean(expected).split(" ");
+        const actualWords = clean(actual).split(" ");
+        let matchCount = 0;
+        expectedWords.forEach((word, i) => {
+          if (actualWords[i] && actualWords[i] === word) matchCount++;
+        });
+        return Math.round((matchCount / expectedWords.length) * 100);
+      }
+
 document.addEventListener("DOMContentLoaded", () => {
   const replayBtn = document.getElementById("replay");
   const micBtn = document.getElementById("mic");
@@ -39,6 +58,23 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       mediaRecorder.onstop = () => {
+        audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+        const audioURL = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioURL);
+        audio.play();
+
+        recognition.start();
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          console.log("Bạn nói:", transcript);
+          const score = compareSentences(currentSentence, transcript);
+          document.querySelector(".score").textContent = score;
+        };
+        recognition.onerror = (event) => {
+          console.error("Lỗi nhận dạng:", event.error);
+          document.querySelector(".score").textContent = "0";
+        };
+    
         audioBlob = new Blob(audioChunks, { type: "audio/wav" });
         const audioURL = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioURL);
@@ -104,6 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
         div.className = "sentence-item";
         div.style.cursor = "pointer";
         div.onclick = () => {
+          currentSentence = sentence;
           const utterance = new SpeechSynthesisUtterance(sentence);
           utterance.rate = currentRate;
           speechSynthesis.speak(utterance);
