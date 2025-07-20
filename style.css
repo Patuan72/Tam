@@ -122,10 +122,3 @@ footer {
   color: #ff9800; /* cam sáng */
   font-size: 28px;
 }
-
-.icon.recording {
-  color: red !important;
-}
-.icon.playing {
-  color: green !important;
-}

@@ -1,24 +1,45 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PWA VPM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VPM</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>VPM</h1>
-  <div id="sentenceList" class="sentence-box"></div>
-  <div id="transcript">🗣 Bạn nói: ...</div>
-  <div class="score-box">Điểm: <span class="score">0</span></div>
+  <header>
+    <div class="logo">VPM</div>
+    <div class="score">85</div>
+    <div class="speed-selector">
+      <span class="dot selected">●</span>
+      <span class="dot">●</span>
+      <span class="dot">●</span>
+    </div>
+    <div class="menu-icon" id="menuBtn">☰</div>
+  </header>
+
+  <main>
+    <div id="sentenceList"></div>
+    <div id="transcript" style="margin-top:10px; font-size:16px; color:#00796b;"></div>
+  </main>
 
   <footer>
     <button class="icon" id="replay">🔁</button>
     <button class="icon" id="mic">🎤</button>
-    <button class="icon" id="check">✅</button>
     <button class="icon" id="save">💾</button>
   </footer>
+
+  <div id="library" class="hidden">
+    <div class="library-content">
+      <button id="backBtn" class="back-btn">⬅️ Quay lại</button>
+      <h3>📚 Giáo trình</h3>
+      <ul id="downloadedList">
+        <li><a href="#" data-unit="unit1.json">Unit 1: Greetings</a></li>
+        <li><a href="#" data-unit="unit2.json">Unit 2: Asking for Help</a></li>
+      </ul>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
