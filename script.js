@@ -124,8 +124,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
+    let recognition;
+SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
     recognition.lang = "en-US";
     recognition.interimResults = false;
 
