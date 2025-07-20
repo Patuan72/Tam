@@ -1,43 +1,43 @@
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VPM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PWA Speaking Practice</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <div class="logo">VPM</div>
-    <div class="score">85</div>
-    <div class="speed-selector">
-      <span class="dot selected">●</span>
-      <span class="dot">●</span>
-      <span class="dot">●</span>
+    <button id="menuBtn">📚</button>
+    <h1>OZO</h1>
+    <div class="dots">
+      <span class="dot selected"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
     </div>
-    <div class="menu-icon" id="menuBtn">☰</div>
   </header>
 
   <main>
     <div id="sentenceList"></div>
-    <div id="transcript" style="margin-top:10px; font-size:16px; color:#00796b;"></div>
+    <div id="transcript">🗣 ...</div>
+    <div class="score">Điểm: ...</div>
   </main>
 
   <footer>
-    <button class="icon" id="replay">🔁</button>
-    <button class="icon" id="mic">🎤</button>
-    <button class="icon" id="save">💾</button>
+    <button class="icon" id="record">🎤 Ghi âm</button>
+    <button class="icon" id="check">✅ Chấm điểm</button>
+    <button class="icon" id="replay">🔁 Nghe lại</button>
+    <button class="icon" id="save">💾 Lưu</button>
   </footer>
 
   <div id="library" class="hidden">
-    <div class="library-content">
-      <button id="backBtn" class="back-btn">⬅️ Quay lại</button>
-      <h3>📚 Giáo trình</h3>
-      <ul id="downloadedList">
-        <li><a href="#" data-unit="unit1.json">Unit 1: Greetings</a></li>
-        <li><a href="#" data-unit="unit2.json">Unit 2: Asking for Help</a></li>
-      </ul>
+    <div class="panel">
+      <button id="backBtn">⬅️</button>
+      <div id="downloadedList">
+        <a href="#" data-unit="unit1.json">Unit 1</a><br/>
+        <a href="#" data-unit="unit2.json">Unit 2</a>
+      </div>
     </div>
   </div>
 
