@@ -103,3 +103,17 @@ footer {
 .sentence-item:active {
   background-color: #e0f7fa;
 }
+
+
+/* Tốc độ: tất cả là ●, cyan nếu được chọn */
+.speed-selector .dot {
+  font-size: 18px;
+  color: black;
+  margin: 0 6px;
+}
+
+.speed-selector .dot.selected {
+  color: #00bcd4;
+  font-size: 22px;
+  font-weight: bold;
+}
