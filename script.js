@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let audioChunks = [];
   let audioBlob = null;
   let currentRate = 1.0;
-  let currentSentence = "";
+  let currentSentence = ""; const transcriptBox = document.querySelector("#transcript");
 
   let recognitionSupported = false;
   let recognition;
@@ -68,11 +68,13 @@ document.addEventListener("DOMContentLoaded", () => {
           recognition.start();
           recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
+            transcriptBox.textContent = "🗣 Bạn nói: " + transcript;
             const score = compareSentences(currentSentence, transcript);
             document.querySelector(".score").textContent = score;
           };
           recognition.onerror = (event) => {
             console.error("Lỗi nhận dạng:", event.error);
+            transcriptBox.textContent = "⚠️ Không thể nhận dạng giọng nói.";
             document.querySelector(".score").textContent = "0";
           };
         }
