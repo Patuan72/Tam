@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   const micBtn = document.getElementById("mic");
   const replayBtn = document.getElementById("replay");
@@ -154,69 +155,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     return Math.round((match / expectedWords.length) * 100);
   }
-});
-
-// --- Mic & Replay Logic ---
-
-let recognition;
-let recognizing = false;
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-if (SpeechRecognition) {
-    recognition = new SpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.continuous = false;
-    recognition.interimResults = false;
-
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.toLowerCase().trim();
-        const currentText = document.querySelector('.sample-sentence')?.textContent?.toLowerCase().trim() || '';
-        let score = 0;
-
-        if (currentText && transcript) {
-            const transcriptWords = transcript.split(/\s+/);
-            const targetWords = currentText.split(/\s+/);
-            let matchCount = 0;
-            targetWords.forEach((word, i) => {
-                if (transcriptWords[i] && transcriptWords[i] === word) {
-                    matchCount++;
-                }
-            });
-            score = Math.round((matchCount / targetWords.length) * 100);
-        }
-
-        document.getElementById("score").textContent = score;
-        document.getElementById("transcript").textContent = transcript;
-        recognizing = false;
-    };
-
-    recognition.onerror = (e) => {
-        console.error("Recognition error:", e);
-        recognizing = false;
-    };
-
-    recognition.onend = () => {
-        recognizing = false;
-    };
-}
-
-const micBtn = document.getElementById("mic-btn");
-if (micBtn) {
-    micBtn.addEventListener("click", () => {
-        if (!recognition) return;
-        if (recognizing) {
-            recognition.stop();
-        } else {
-            recognition.start();
-            recognizing = true;
-        }
-    });
-}
-
-// Replay logic
-document.querySelectorAll(".replay-icon").forEach(icon => {
-    icon.addEventListener("click", () => {
-        const audio = icon.closest(".sample")?.querySelector("audio");
-        if (audio) audio.play();
-    });
 });
