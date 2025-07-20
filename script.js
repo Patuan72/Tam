@@ -1,30 +1,4 @@
 
-
-let currentSentence = "";
-let recognitionSupported = false;
-let recognition;
-
-try {
-  recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  recognition.lang = 'en-US';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-  recognitionSupported = true;
-} catch (e) {
-  console.warn("SpeechRecognition not supported:", e);
-}
-
-function compareSentences(expected, actual) {
-  const clean = s => s.toLowerCase().replace(/[.,!?]/g, "").trim();
-  const expectedWords = clean(expected).split(" ");
-  const actualWords = clean(actual).split(" ");
-  let matchCount = 0;
-  expectedWords.forEach((word, i) => {
-    if (actualWords[i] && actualWords[i] === word) matchCount++;
-  });
-  return Math.round((matchCount / expectedWords.length) * 100);
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   const replayBtn = document.getElementById("replay");
   const micBtn = document.getElementById("mic");
@@ -34,8 +8,32 @@ document.addEventListener("DOMContentLoaded", () => {
   let mediaRecorder;
   let audioChunks = [];
   let audioBlob = null;
-
   let currentRate = 1.0;
+  let currentSentence = "";
+
+  // SpeechRecognition setup
+  let recognitionSupported = false;
+  let recognition;
+  try {
+    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognitionSupported = true;
+  } catch (e) {
+    console.warn("SpeechRecognition not supported:", e);
+  }
+
+  function compareSentences(expected, actual) {
+    const clean = s => s.toLowerCase().replace(/[.,!?]/g, "").trim();
+    const expectedWords = clean(expected).split(" ");
+    const actualWords = clean(actual).split(" ");
+    let matchCount = 0;
+    expectedWords.forEach((word, i) => {
+      if (actualWords[i] && actualWords[i] === word) matchCount++;
+    });
+    return Math.round((matchCount / expectedWords.length) * 100);
+  }
 
   replayBtn.addEventListener("click", () => {
     if (!audioBlob) {
@@ -83,13 +81,8 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelector(".score").textContent = "0";
           };
         } else {
-          console.warn("Không thể chấm điểm: SpeechRecognition không khả dụng hoặc chưa chọn câu.");
+          console.warn("Không thể chấm điểm: chưa chọn câu hoặc trình duyệt không hỗ trợ.");
         }
-    
-        audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-        const audioURL = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioURL);
-        audio.play();
       };
 
       mediaRecorder.start();
