@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const audioURL = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioURL);
         audio.play();
-
+        audio.onended = () => {
         if (recognitionSupported && currentSentence) {
           recognition.start();
           recognition.onresult = (event) => {
