@@ -1,6 +1,6 @@
 
 
-let currentSentence = ""; // câu đang chọn
+let currentSentence = "";
 let recognitionSupported = false;
 let recognition;
 
@@ -11,7 +11,7 @@ try {
   recognition.maxAlternatives = 1;
   recognitionSupported = true;
 } catch (e) {
-  console.warn("Trình duyệt không hỗ trợ SpeechRecognition:", e);
+  console.warn("SpeechRecognition not supported:", e);
 }
 
 function compareSentences(expected, actual) {
