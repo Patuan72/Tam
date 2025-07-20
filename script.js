@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let audioChunks = [];
   let audioBlob = null;
   let currentRate = 1.0;
-  let currentSentence = ""; const transcriptBox = document.querySelector("#transcript");
+  let currentSentence = "";
 
   let recognitionSupported = false;
   let recognition;
@@ -64,17 +64,39 @@ document.addEventListener("DOMContentLoaded", () => {
       mediaRecorder.onstop = () => {
         audioBlob = new Blob(audioChunks, { type: "audio/wav" });
 
+        // Giải phóng mic hoàn toàn trước khi recognition
+        stream.getTracks().forEach(track => track.stop());
+
         if (recognitionSupported && currentSentence) {
           recognition.start();
           recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
-            transcriptBox.textContent = "🗣 Bạn nói: " + transcript;
+            const score = compareSentences(currentSentence, transcript);
+            document.querySelector(".score").textContent = score;
+            const transcriptBox = document.querySelector("#transcript");
+            if (transcriptBox) {
+              transcriptBox.textContent = "🗣 Bạn nói: " + transcript;
+            }
+          };
+          recognition.onerror = (event) => {
+            const transcriptBox = document.querySelector("#transcript");
+            if (transcriptBox) {
+              transcriptBox.textContent = "⚠️ Không thể nhận dạng giọng nói.";
+            }
+            document.querySelector(".score").textContent = "0";
+          };
+        }
+        audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+
+        if (recognitionSupported && currentSentence) {
+          recognition.start();
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
             const score = compareSentences(currentSentence, transcript);
             document.querySelector(".score").textContent = score;
           };
           recognition.onerror = (event) => {
             console.error("Lỗi nhận dạng:", event.error);
-            transcriptBox.textContent = "⚠️ Không thể nhận dạng giọng nói.";
             document.querySelector(".score").textContent = "0";
           };
         }
@@ -139,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
         div.onclick = () => {
           currentSentence = sentence;
           const utterance = new SpeechSynthesisUtterance(sentence);
+          utterance.volume = 1.0;
           utterance.rate = currentRate;
           speechSynthesis.speak(utterance);
         };
