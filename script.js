@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const libraryPanel = document.getElementById("library");
   const backBtn = document.getElementById("backBtn");
 
-  let currentSentence = "";
+  let currentSentence = document.querySelector(".sentence").textContent.trim();
   let currentRate = 1.0;
   let audioBlob = null;
   let mediaRecorder;
@@ -156,11 +156,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const actualWords = clean(actual).split(" ");
     let match = 0;
     expectedWords.forEach((word, i) => {
-        if (actualWords[i] && actualWords[i] === word) match++;
+      if (actualWords[i] && actualWords[i] === word) match++;
     });
-    const score = Math.round((match / expectedWords.length) * 100);
-    return score;
-});
     return Math.round((match / expectedWords.length) * 100);
   }
 });
