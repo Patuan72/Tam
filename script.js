@@ -4,7 +4,8 @@ let mediaRecorder;
 let recordedChunks = [];
 let audioBlob;
 let audioContext;
-let sourceNode;
+let analyzer;
+let meydaSource;
 
 const micBtn = document.getElementById("mic-btn");
 const replayBtn = document.getElementById("replay-btn");
@@ -21,8 +22,7 @@ micBtn.addEventListener("click", async () => {
     mediaRecorder = new MediaRecorder(stream);
     mediaRecorder.start();
 
-    const source = audioContext.createMediaStreamSource(stream);
-    const scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
+    meydaSource = audioContext.createMediaStreamSource(stream);
 
     await new Promise((resolve) => {
       const interval = setInterval(() => {
@@ -33,33 +33,29 @@ micBtn.addEventListener("click", async () => {
       }, 100);
     });
 
-    Meyda.bufferSize = 2048;
-    Meyda.windowingFunction = "hanning";
-    Meyda.sampleRate = audioContext.sampleRate;
+    analyzer = Meyda.createMeydaAnalyzer({
+      audioContext: audioContext,
+      source: meydaSource,
+      bufferSize: 512,
+      featureExtractors: ["rms", "zcr"],
+      callback: (features) => {
+        if (features && features.rms !== undefined && features.zcr !== undefined) {
+          let score = 100;
+          if (features.rms < 0.02) score -= 40;
+          if (features.zcr > 0.15) score -= 30;
+          scoreDisplay.textContent = Math.max(0, Math.round(score));
+        }
+      },
+    });
 
-    scriptProcessor.onaudioprocess = (event) => {
-      const input = event.inputBuffer.getChannelData(0);
-      const features = Meyda.extract(["rms", "zcr"], input);
-      if (features && features.rms && features.zcr) {
-        const rms = features.rms;
-        const zcr = features.zcr;
-        let score = 100;
-        if (rms < 0.02) score -= 40;
-        if (zcr > 0.15) score -= 30;
-        scoreDisplay.textContent = Math.max(0, Math.round(score));
-      }
-    };
-
-    source.connect(scriptProcessor);
-    scriptProcessor.connect(audioContext.destination);
+    analyzer.start();
 
     mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) {
-        recordedChunks.push(e.data);
-      }
+      if (e.data.size > 0) recordedChunks.push(e.data);
     };
 
     mediaRecorder.onstop = () => {
+      analyzer.stop();
       audioBlob = new Blob(recordedChunks);
       const audioURL = URL.createObjectURL(audioBlob);
       replayBtn.onclick = () => {
