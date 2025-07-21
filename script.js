@@ -59,6 +59,33 @@ document.addEventListener("DOMContentLoaded", () => {
       mediaRecorder.onstop = () => {
         const audioBlobTemp = new Blob(audioChunks, { type: "audio/wav" });
         audioBlob = audioBlobTemp;
+        const context = new AudioContext();
+        const reader = new FileReader();
+        reader.onload = async () => {
+          const buffer = await context.decodeAudioData(reader.result);
+          const source = context.createBufferSource();
+          source.buffer = buffer;
+          const analyser = Meyda.createMeydaAnalyzer({
+            audioContext: context,
+            source: source,
+            bufferSize: 512,
+            featureExtractors: ['rms', 'zcr', 'spectralFlatness'],
+            callback: features => {
+              const { rms, zcr, spectralFlatness } = features;
+              let score = 100;
+              score -= Math.min(40, (0.02 - rms) * 2000);
+              score -= Math.max(0, (zcr - 0.2) * 150);
+              score -= Math.max(0, (spectralFlatness - 0.5) * 100);
+              score = Math.max(0, Math.min(100, Math.round(score)));
+              scoreBox.textContent = score;
+            }
+          });
+          source.connect(context.destination);
+          analyser.start();
+          source.start();
+        };
+        reader.readAsArrayBuffer(audioBlob);
+    
         stream.getTracks().forEach(track => track.stop());
 
         const audio = new Audio(URL.createObjectURL(audioBlob));
