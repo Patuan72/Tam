@@ -59,43 +59,11 @@ document.addEventListener("DOMContentLoaded", () => {
       mediaRecorder.onstop = () => {
         const audioBlobTemp = new Blob(audioChunks, { type: "audio/wav" });
         audioBlob = audioBlobTemp;
-        const context = new AudioContext();
-        const reader = new FileReader();
-        reader.onload = async () => {
-          const buffer = await context.decodeAudioData(reader.result);
-          const source = context.createBufferSource();
-          source.buffer = buffer;
-          const analyser = Meyda.createMeydaAnalyzer({
-            audioContext: context,
-            source: source,
-            bufferSize: 512,
-            featureExtractors: ['rms', 'zcr', 'spectralFlatness'],
-            callback: features => {
-              const { rms, zcr, spectralFlatness } = features;
-              // Chấm điểm đơn giản
-              let score = 100;
-              if (rms < 0.02) score -= 40;
-              if (zcr > 0.2) score -= 30;
-              if (spectralFlatness > 0.5) score -= 30;
-              scoreBox.textContent = Math.max(0, Math.round(score));
-            }
-          });
-          source.connect(context.destination);
-          analyser.start();
-          source.start();
-        };
-        reader.readAsArrayBuffer(audioBlob);
-
         stream.getTracks().forEach(track => track.stop());
-
-        const audio = new Audio(URL.createObjectURL(audioBlob));
-        audio.play();
 
         transcriptBox.textContent = "🔁 Đang phát lại...";
 
-        audio.onended = () => {
-          transcriptBox.textContent = "";
-        };
+        
         recognition.start();
       };
 
@@ -108,9 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   replayBtn.addEventListener("click", () => {
     if (!audioBlob) return alert("Chưa có bản ghi.");
-    const audio = new Audio(URL.createObjectURL(audioBlob));
-    audio.play();
-  });
+    });
 
   saveBtn.addEventListener("click", () => {
     if (!audioBlob) return alert("Chưa có bản ghi để lưu.");
