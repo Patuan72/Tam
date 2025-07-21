@@ -1,156 +1,47 @@
-let recognition;
 
+let currentSentence = "";
+let mediaRecorder;
+let audioChunks = [];
 
-document.addEventListener("DOMContentLoaded", () => {
-  const micBtn = document.getElementById("mic");
-  const replayBtn = document.getElementById("replay");
-  const saveBtn = document.getElementById("save");
-  const transcriptBox = document.getElementById("transcript");
-  const scoreBox = document.querySelector(".score");
-  const sentenceList = document.getElementById("sentenceList");
-  const menuBtn = document.getElementById("menuBtn");
-  const libraryPanel = document.getElementById("library");
-  const backBtn = document.getElementById("backBtn");
+const startButton = document.getElementById("startButton");
+const scoreBox = document.getElementById("scoreBox");
+const sentenceBox = document.getElementById("sentenceBox");
+const micButton = document.getElementById("micButton");
+const replayButton = document.getElementById("replayButton");
 
-  let currentSentence = "";
-  let currentRate = 1.0;
-  let audioBlob = null;
-  let mediaRecorder;
-  let audioChunks = [];
-  let isRecording = false;
+micButton.addEventListener("click", async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
 
-  function toggleLabelMode(show) {
-    document.querySelectorAll(".icon").forEach(btn => {
-      if (show) btn.classList.add("text-label");
-      else btn.classList.remove("text-label");
-    });
-  }
+    mediaRecorder.ondataavailable = e => {
+        if (e.data.size > 0) {
+            audioChunks.push(e.data);
+        }
+    };
 
-  toggleLabelMode(true);
+    mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+        const arrayBuffer = await audioBlob.arrayBuffer();
+        const audioContext = new AudioContext();
+        const buffer = await audioContext.decodeAudioData(arrayBuffer);
 
-  menuBtn.addEventListener("click", () => {
-    libraryPanel.classList.remove("hidden");
-  });
+        const channelData = buffer.getChannelData(0);
+        const features = Meyda.extract(['rms', 'zcr', 'spectralFlatness'], channelData);
+        if (!features) return;
+        const { rms, zcr, spectralFlatness } = features;
 
-  backBtn.addEventListener("click", () => {
-    libraryPanel.classList.add("hidden");
-  });
+        let score = 100;
+        score -= Math.min(40, Math.max(0, (0.025 - rms) * 1600));
+        score -= Math.max(0, (zcr - 0.2) * 150);
+        score -= Math.max(0, (spectralFlatness - 0.5) * 100);
+        score = Math.max(0, Math.min(100, Math.round(score)));
+        scoreBox.textContent = score;
+    };
 
-  micBtn.addEventListener("click", async () => {
-    if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-      alert('Trình duyệt không hỗ trợ nhận diện giọng nói.'); return;
-    }
-    if (!currentSentence) {
-      alert("Hãy chọn một câu trước khi ghi âm.");
-      return;
-    }
-
-    if (!isRecording) {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder = new MediaRecorder(stream);
-      audioChunks = [];
-      transcriptBox.textContent = "🎙 Đang ghi âm... (bấm lại để dừng)";
-      isRecording = true;
-
-      mediaRecorder.ondataavailable = e => {
-        if (e.data.size > 0) audioChunks.push(e.data);
-      };
-
-      mediaRecorder.onstop = () => {
-        const audioBlobTemp = new Blob(audioChunks, { type: "audio/wav" });
-        audioBlob = audioBlobTemp;
+    mediaRecorder.start();
+    setTimeout(() => {
+        mediaRecorder.stop();
         stream.getTracks().forEach(track => track.stop());
-
-        transcriptBox.textContent = "🔁 Đang phát lại...";
-
-        
-        recognition.start();
-      };
-
-      mediaRecorder.start();
-    } else {
-      isRecording = false;
-      mediaRecorder.stop();
-    }
-  });
-
-  replayBtn.addEventListener("click", () => {
-    if (!audioBlob) return alert("Chưa có bản ghi.");
-    });
-
-  saveBtn.addEventListener("click", () => {
-    if (!audioBlob) return alert("Chưa có bản ghi để lưu.");
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(audioBlob);
-    a.download = "recording.wav";
-    a.click();
-  });
-
-  document.querySelectorAll(".dot").forEach((dot, index) => {
-    dot.addEventListener("click", () => {
-      document.querySelectorAll(".dot").forEach(d => d.classList.remove("selected"));
-      dot.classList.add("selected");
-      currentRate = [0.6, 1.0, 1.4][index];
-    });
-  });
-
-  document.querySelectorAll("#downloadedList a").forEach(link => {
-    link.addEventListener("click", async e => {
-      e.preventDefault();
-      const res = await fetch(link.dataset.unit);
-      const data = await res.json();
-      sentenceList.innerHTML = "";
-      data.sentences.forEach((sentence, i) => {
-        const div = document.createElement("div");
-        div.textContent = (i + 1) + ". " + sentence;
-        div.className = "sentence-item";
-        div.addEventListener("click", () => {
-          currentSentence = sentence;
-          speakSentence(sentence);
-        });
-        sentenceList.appendChild(div);
-      });
-      libraryPanel.classList.add("hidden");
-    });
-  });
-
-  function speakSentence(sentence) {
-    const utterance = new SpeechSynthesisUtterance(sentence);
-    utterance.lang = "en-US";
-    utterance.rate = currentRate;
-    speechSynthesis.speak(utterance);
-  }
-
-  if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.interimResults = false;
-
-    recognition.onresult = event => {
-      const transcript = event.results[0][0].transcript;
-      transcriptBox.textContent = "🗣 " + transcript;
-      const score = compareSentences(currentSentence, transcript);
-      scoreBox.textContent = score;
-    };
-
-    recognition.onerror = e => {
-      transcriptBox.textContent = "❌ Lỗi: " + e.error;
-      scoreBox.textContent = "0";
-    };
-  }
-
-  function clean(text) {
-    return text.toLowerCase().replace(/[.,!?]/g, "").trim();
-  }
-
-  function compareSentences(expected, actual) {
-    const expectedWords = clean(expected).split(" ");
-    const actualWords = clean(actual).split(" ");
-    let match = 0;
-    expectedWords.forEach((word, i) => {
-      if (actualWords[i] && actualWords[i] === word) match++;
-    });
-    return Math.round((match / expectedWords.length) * 100);
-  }
+    }, 3000);
 });
