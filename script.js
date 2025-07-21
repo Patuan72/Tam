@@ -57,10 +57,13 @@ micBtn.addEventListener("click", async () => {
 
     const reader = new FileReader();
     reader.onload = () => {
-      const arrayBuffer = reader.result;
+      
+    const base64Data = reader.result.split(',')[1];
+    voskWorker.postMessage({ command: "recognize_base64", audioBase64: base64Data });
+    
       voskWorker.postMessage({ command: "recognize", audio: arrayBuffer });
     };
-    reader.readAsArrayBuffer(audioBlob);
+    reader.readAsDataURL(audioBlob);
   };
 
   mediaRecorder.start();

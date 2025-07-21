@@ -45,3 +45,25 @@ self.onmessage = async function (e) {
     postMessage({ text: text });
   }
 };
+
+
+function base64ToArrayBuffer(base64) {
+  const binaryString = atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
+self.onmessage = function(e) {
+  if (e.data.command === "recognize_base64" && recognizer) {
+    const buffer = base64ToArrayBuffer(e.data.audioBase64);
+    const int16 = new Int16Array(buffer);
+    recognizer.acceptWaveform(int16);
+    const result = recognizer.finalResult();
+    const text = JSON.parse(result).text;
+    postMessage({ text: text });
+  }
+};
