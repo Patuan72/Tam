@@ -151,8 +151,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const actualWords = clean(actual).split(" ");
     let match = 0;
     expectedWords.forEach((word, i) => {
-      if (actualWords[i] && actualWords[i] === word) match++;
+        if (actualWords[i] && actualWords[i] === word) match++;
     });
+    return Math.round((match / expectedWords.length) * 100);
+});
     return Math.round((match / expectedWords.length) * 100);
   }
 });
