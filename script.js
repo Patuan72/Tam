@@ -3,9 +3,6 @@ let isRecording = false;
 let mediaRecorder;
 let recordedChunks = [];
 let audioBlob;
-let audioContext;
-let analyzer;
-let meydaSource;
 
 const micBtn = document.getElementById("mic-btn");
 const replayBtn = document.getElementById("replay-btn");
@@ -19,75 +16,57 @@ micBtn.addEventListener("click", async () => {
     micBtn.textContent = "⏹️";
     scoreDisplay.textContent = "...";
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      mediaRecorder = new MediaRecorder(stream);
-      mediaRecorder.start();
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.start();
 
-      const source = audioContext.createMediaStreamSource(stream);
-      meydaSource = source;
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) recordedChunks.push(e.data);
+    };
 
-      await new Promise((resolve) => {
-        const checkMeyda = setInterval(() => {
-          if (window.Meyda && Meyda.createMeydaAnalyzer) {
-            clearInterval(checkMeyda);
-            resolve();
-          }
-        }, 100);
-      });
+    mediaRecorder.onstop = async () => {
+      audioBlob = new Blob(recordedChunks, { type: "audio/webm" });
+      const audioURL = URL.createObjectURL(audioBlob);
 
-      analyzer = Meyda.createMeydaAnalyzer({
-        audioContext: audioContext,
-        source: meydaSource,
-        bufferSize: 512,
-        featureExtractors: ["rms", "zcr"],
-        callback: (features) => {
-          if (features && features.rms !== undefined && features.zcr !== undefined) {
-            let score = 100;
-            if (features.rms < 0.02) score -= 40;
-            if (features.zcr > 0.15) score -= 30;
-            scoreDisplay.textContent = Math.max(0, Math.round(score));
-          }
-        },
-      });
-
-      analyzer.start();
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) recordedChunks.push(e.data);
+      replayBtn.onclick = () => {
+        const audio = new Audio(audioURL);
+        audio.play();
       };
 
-      mediaRecorder.onstop = () => {
-        analyzer.stop();
-        audioBlob = new Blob(recordedChunks);
-        const audioURL = URL.createObjectURL(audioBlob);
-        replayBtn.onclick = () => {
-          const audio = new Audio(audioURL);
-          audio.play();
+      // Meyda offline analysis
+      try {
+        const arrayBuffer = await audioBlob.arrayBuffer();
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const decodedData = await audioContext.decodeAudioData(arrayBuffer);
+        const channelData = decodedData.getChannelData(0); // mono
+
+        const features = Meyda.extract(["rms", "zcr"], channelData);
+
+        let score = 100;
+        if (features.rms < 0.02) score -= 40;
+        if (features.zcr > 0.15) score -= 30;
+
+        scoreDisplay.textContent = Math.max(0, Math.round(score));
+      } catch (err) {
+        console.error("Meyda analysis failed:", err);
+        scoreDisplay.textContent = "0";
+      }
+
+      // STT hiển thị
+      try {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-US";
+        recognition.onresult = function (event) {
+          transcriptDisplay.textContent = event.results[0][0].transcript;
         };
+        recognition.start();
+      } catch (err) {
+        transcriptDisplay.textContent = "STT not supported.";
+      }
 
-        // Speech-to-Text
-        try {
-          const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-          recognition.lang = 'en-US';
-          recognition.onresult = function (event) {
-            transcriptDisplay.textContent = event.results[0][0].transcript;
-          };
-          recognition.start();
-        } catch (err) {
-          transcriptDisplay.textContent = "STT not supported.";
-        }
-
-        isRecording = false;
-        micBtn.textContent = "🎤";
-      };
-    } catch (err) {
-      console.error("Error accessing mic or initializing Meyda:", err);
-      scoreDisplay.textContent = "Mic error";
       isRecording = false;
       micBtn.textContent = "🎤";
-    }
+    };
   } else {
     mediaRecorder.stop();
   }
