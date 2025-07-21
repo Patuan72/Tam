@@ -67,7 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
         transcriptBox.textContent = "🔁 Đang phát lại...";
 
         audio.onended = () => {
-          transcriptBox.textContent = "";
+          transcriptBox.textContent = "🧠 Đang nhận diện...";
+          recognition.start();
         };
         recognition.start();
       };
@@ -136,6 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     recognition.onresult = event => {
       const transcript = event.results[0][0].transcript;
+    console.log('🎤 Transcript:', transcript);
       transcriptBox.textContent = "🗣 " + transcript;
       const score = compareSentences(currentSentence, transcript);
       scoreBox.textContent = score;
