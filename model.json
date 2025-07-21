@@ -1,9 +1,0 @@
-{
-  "type": "vosk-model",
-  "features": [
-    "mfcc"
-  ],
-  "sample_rate": 16000,
-  "version": "0.3",
-  "lang": "en"
-}
