@@ -89,6 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
         stream.getTracks().forEach(track => track.stop());
 
         const audio = new Audio(URL.createObjectURL(audioBlob));
+        audio.play();
+
         transcriptBox.textContent = "🔁 Đang phát lại...";
 
         audio.onended = () => {
@@ -107,7 +109,8 @@ document.addEventListener("DOMContentLoaded", () => {
   replayBtn.addEventListener("click", () => {
     if (!audioBlob) return alert("Chưa có bản ghi.");
     const audio = new Audio(URL.createObjectURL(audioBlob));
-    });
+    audio.play();
+  });
 
   saveBtn.addEventListener("click", () => {
     if (!audioBlob) return alert("Chưa có bản ghi để lưu.");
