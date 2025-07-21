@@ -1,9 +1,0 @@
-{
-  "name": "Vosk PWA",
-  "short_name": "VoskPWA",
-  "start_url": "index.html",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#00796b",
-  "icons": []
-}
