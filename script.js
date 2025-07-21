@@ -132,6 +132,8 @@ document.addEventListener("DOMContentLoaded", () => {
         div.textContent = (i + 1) + ". " + sentence;
         div.className = "sentence-item";
         div.addEventListener("click", () => {
+          document.querySelectorAll(".sentence-item").forEach(el => el.classList.remove("selected"));
+          div.classList.add("selected");
           currentSentence = sentence;
           speakSentence(sentence);
         });
@@ -156,7 +158,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     recognition.onresult = event => {
       const transcript = event.results[0][0].transcript;
-      transcriptBox.textContent = "🗣 " + transcript;
+      const transcriptSpan = document.createElement("div");
+      transcriptSpan.textContent = "🗣 " + transcript;
+      transcriptSpan.style.fontSize = "14px";
+      transcriptSpan.style.color = "#555";
+      transcriptSpan.style.marginTop = "4px";
+      const selectedItem = document.querySelector(".sentence-item.selected");
+      if (selectedItem) {
+        const oldTranscript = selectedItem.querySelector(".inline-transcript");
+        if (oldTranscript) selectedItem.removeChild(oldTranscript);
+        transcriptSpan.classList.add("inline-transcript");
+        selectedItem.appendChild(transcriptSpan);
+      }
     };
 
     recognition.onerror = e => {
