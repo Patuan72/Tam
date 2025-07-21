@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder = new MediaRecorder(stream);
       audioChunks = [];
-      
+      transcriptBox.textContent = "🎙 Đang ghi âm... (bấm lại để dừng)";
       isRecording = true;
 
       mediaRecorder.ondataavailable = e => {
@@ -72,12 +72,12 @@ document.addEventListener("DOMContentLoaded", () => {
             featureExtractors: ['rms', 'zcr', 'spectralFlatness'],
             callback: features => {
               const { rms, zcr, spectralFlatness } = features;
+              // Chấm điểm đơn giản
               let score = 100;
-              score -= Math.min(40, (0.02 - rms) * 2000);
-              score -= Math.max(0, (zcr - 0.2) * 150);
-              score -= Math.max(0, (spectralFlatness - 0.5) * 100);
-              score = Math.max(0, Math.min(100, Math.round(score)));
-              scoreBox.textContent = score;
+              if (rms < 0.02) score -= 40;
+              if (zcr > 0.2) score -= 30;
+              if (spectralFlatness > 0.5) score -= 30;
+              scoreBox.textContent = Math.max(0, Math.round(score));
             }
           });
           source.connect(context.destination);
@@ -85,19 +85,18 @@ document.addEventListener("DOMContentLoaded", () => {
           source.start();
         };
         reader.readAsArrayBuffer(audioBlob);
-    
+
         stream.getTracks().forEach(track => track.stop());
 
         const audio = new Audio(URL.createObjectURL(audioBlob));
         audio.play();
 
-        
+        transcriptBox.textContent = "🔁 Đang phát lại...";
 
         audio.onended = () => {
-          
-          
+          transcriptBox.textContent = "";
         };
-        
+        recognition.start();
       };
 
       mediaRecorder.start();
@@ -140,8 +139,6 @@ document.addEventListener("DOMContentLoaded", () => {
         div.textContent = (i + 1) + ". " + sentence;
         div.className = "sentence-item";
         div.addEventListener("click", () => {
-          document.querySelectorAll(".sentence-item").forEach(el => el.classList.remove("selected"));
-          div.classList.add("selected");
           currentSentence = sentence;
           speakSentence(sentence);
         });
@@ -158,7 +155,18 @@ document.addEventListener("DOMContentLoaded", () => {
     speechSynthesis.speak(utterance);
   }
 
-  };
+  if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+
+    recognition.onresult = event => {
+      const transcript = event.results[0][0].transcript;
+      transcriptBox.textContent = "🗣 " + transcript;
+      const score = compareSentences(currentSentence, transcript);
+      scoreBox.textContent = score;
+    };
 
     recognition.onerror = e => {
       transcriptBox.textContent = "❌ Lỗi: " + e.error;
