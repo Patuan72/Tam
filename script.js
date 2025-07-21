@@ -6,7 +6,6 @@ let audioBlob;
 
 const micBtn = document.getElementById("mic-btn");
 const replayBtn = document.getElementById("replay-btn");
-const scoreDisplay = document.getElementById("score-display");
 const transcriptDisplay = document.getElementById("transcript");
 
 micBtn.addEventListener("click", async () => {
@@ -14,7 +13,6 @@ micBtn.addEventListener("click", async () => {
     isRecording = true;
     recordedChunks = [];
     micBtn.textContent = "⏹️";
-    scoreDisplay.textContent = "...";
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
@@ -32,25 +30,6 @@ micBtn.addEventListener("click", async () => {
         const audio = new Audio(audioURL);
         audio.play();
       };
-
-      // Meyda offline analysis
-      try {
-        const arrayBuffer = await audioBlob.arrayBuffer();
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const decodedData = await audioContext.decodeAudioData(arrayBuffer);
-        const channelData = decodedData.getChannelData(0); // mono
-
-        const features = Meyda.extract(["rms", "zcr"], channelData);
-
-        let score = 100;
-        if (features.rms < 0.02) score -= 40;
-        if (features.zcr > 0.15) score -= 30;
-
-        scoreDisplay.textContent = Math.max(0, Math.round(score));
-      } catch (err) {
-        console.error("Meyda analysis failed:", err);
-        scoreDisplay.textContent = "0";
-      }
 
       // STT hiển thị
       try {
