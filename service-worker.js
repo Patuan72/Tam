@@ -5,7 +5,9 @@ self.addEventListener('install', function(e) {
         '/',
         '/index.html',
         '/style.css',
-        '/script.js'
+        '/script.js',
+        '/unit1.json',
+        '/unit2.json'
       ]);
     })
   );
