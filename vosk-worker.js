@@ -1,25 +1,32 @@
 
-let model, recognizer, Module;
-let ready = false;
+let model, recognizer, sampleRate = 16000;
+
+importScripts("vosk.js");
 
 self.onmessage = async function (e) {
-  if (e.data.command === "init") {
-    importScripts("vosk.js"); // cần đặt vosk.js cạnh worker
+  if (e.data.command === "loadModel") {
+    const files = e.data.model.files;
 
-    Module = await Vosk.createModel();
-    Module.FS_createPreloadedFile("/", "model.json", "model/model.json", true, false);
-    Module.FS_createPreloadedFile("/", "model.quantized.bin", "model/model.quantized.bin", true, false);
+    const responseBin = await fetch(files["model.bin"]);
+    const bufferBin = await responseBin.arrayBuffer();
 
-    model = new Module.Model("model");
-    recognizer = new model.Recognizer(16000);
-    ready = true;
+    const responseJson = await fetch(files["model.json"]);
+    const bufferJson = await responseJson.arrayBuffer();
+
+    const VoskModule = await Vosk.createModel();
+    VoskModule.FS_createDataFile("/", "model.quantized.bin", new Uint8Array(bufferBin), true, true);
+    VoskModule.FS_createDataFile("/", "model.json", new Uint8Array(bufferJson), true, true);
+
+    model = new VoskModule.Model("model");
+    recognizer = new model.Recognizer(sampleRate);
+
     postMessage({ status: "ready" });
   }
 
-  if (e.data.command === "process" && ready) {
-    const audioBuffer = new Uint8Array(e.data.buffer);
-    const int16Audio = new Int16Array(audioBuffer.buffer);
-    recognizer.acceptWaveform(int16Audio);
+  if (e.data.command === "recognize" && recognizer) {
+    const buffer = new Uint8Array(e.data.audio);
+    const int16 = new Int16Array(buffer.buffer);
+    recognizer.acceptWaveform(int16);
     const result = recognizer.finalResult();
     const text = JSON.parse(result).text;
     postMessage({ text: text });
