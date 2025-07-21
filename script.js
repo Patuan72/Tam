@@ -1,41 +1,42 @@
+let audioContext;
+let scriptProcessor;
+let microphone;
+let isRecording = false;
+let features = [];
 
-let mediaRecorder;
-let audioChunks = [];
+document.getElementById("record-button").addEventListener("click", async () => {
+  if (!isRecording) {
+    isRecording = true;
+    features = [];
+    document.getElementById("score").textContent = "...";
 
-const micButton = document.getElementById("micButton");
-const scoreBox = document.querySelector(".score");
-
-micButton.addEventListener("click", async () => {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-    audioChunks = [];
+    microphone = audioContext.createMediaStreamSource(stream);
+    scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
 
-    mediaRecorder.ondataavailable = e => {
-        if (e.data.size > 0) {
-            audioChunks.push(e.data);
-        }
-    };
+    const meydaAnalyzer = Meyda.createMeydaAnalyzer({
+      audioContext,
+      source: microphone,
+      bufferSize: 2048,
+      featureExtractors: ["rms"],
+      callback: (feature) => {
+        if (isRecording) features.push(feature.rms);
+      },
+    });
 
-    mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-        const arrayBuffer = await audioBlob.arrayBuffer();
-        const audioContext = new AudioContext();
-        const buffer = await audioContext.decodeAudioData(arrayBuffer);
-        const channelData = buffer.getChannelData(0);
-        const features = Meyda.extract(['rms', 'zcr', 'spectralFlatness'], channelData);
-        if (!features) return;
-        const { rms, zcr, spectralFlatness } = features;
-        let score = 100;
-        score -= Math.min(40, Math.max(0, (0.025 - rms) * 1600));
-        score -= Math.max(0, (zcr - 0.2) * 150);
-        score -= Math.max(0, (spectralFlatness - 0.5) * 100);
-        score = Math.max(0, Math.min(100, Math.round(score)));
-        scoreBox.textContent = score;
-    };
+    meydaAnalyzer.start();
+    microphone.connect(scriptProcessor);
+    scriptProcessor.connect(audioContext.destination);
 
-    mediaRecorder.start();
     setTimeout(() => {
-        mediaRecorder.stop();
-        stream.getTracks().forEach(track => track.stop());
+      isRecording = false;
+      meydaAnalyzer.stop();
+      scriptProcessor.disconnect();
+      audioContext.close();
+      const avg = features.reduce((a, b) => a + b, 0) / features.length;
+      const score = Math.min(100, Math.max(0, Math.round(avg * 2000)));
+      document.getElementById("score").textContent = score;
     }, 3000);
+  }
 });

@@ -1,22 +1,36 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VPM Meyda Only</title>
+  <title>VPM</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Chấm điểm bằng Meyda</h1>
-    <button id="micButton">🎤 Bắt đầu ghi âm</button>
-    <div class="scoreContainer">
-      <span>Điểm phát âm:</span>
-      <span class="score">-</span>
+  <header>
+    <div id="logo">VPM</div>
+    <div id="score">-</div>
+    <div class="speed-indicator">
+      <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
     </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/meyda/dist/web/meyda.min.js"></script>
+    <div id="menu-icon">☰</div>
+  </header>
+
+  <main>
+    <ol id="sentence-list">
+      <li>Can you help me?</li>
+      <li>I don't understand.</li>
+      <li>Please say it again.</li>
+    </ol>
+  </main>
+
+  <footer>
+    <button id="replay-button" disabled>🔁</button>
+    <button id="record-button">🎤</button>
+    <button id="save-button" disabled>💾</button>
+  </footer>
+
+  <script src="meyda.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
