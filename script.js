@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menuBtn");
   const libraryPanel = document.getElementById("library");
   const backBtn = document.getElementById("backBtn");
+  const micIcon = micBtn.querySelector("i");
+  const replayIcon = replayBtn.querySelector("i");
 
   let currentSentence = "";
   let currentRate = 1.0;
@@ -16,15 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let mediaRecorder;
   let audioChunks = [];
   let isRecording = false;
-
-  function toggleLabelMode(show) {
-    document.querySelectorAll(".icon").forEach(btn => {
-      if (show) btn.classList.add("text-label");
-      else btn.classList.remove("text-label");
-    });
-  }
-
-  toggleLabelMode(true);
 
   menuBtn.addEventListener("click", () => {
     libraryPanel.classList.remove("hidden");
@@ -44,17 +37,21 @@ document.addEventListener("DOMContentLoaded", () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder = new MediaRecorder(stream);
       audioChunks = [];
-      transcriptBox.textContent = "🎙 Đang ghi âm... (bấm lại để dừng)";
+      transcriptBox.textContent = "🔴 Đang ghi âm... (bấm để dừng)";
       isRecording = true;
+      micIcon.className = "bi bi-record-circle";
 
       mediaRecorder.ondataavailable = e => {
         if (e.data.size > 0) audioChunks.push(e.data);
       };
 
       mediaRecorder.onstop = () => {
+        isRecording = false;
+        micIcon.className = "bi bi-mic";
+        transcriptBox.textContent = "⏳ Đang chấm điểm...";
+
         const audioBlobTemp = new Blob(audioChunks, { type: "audio/wav" });
         audioBlob = audioBlobTemp;
-        transcriptBox.textContent = "⏳ Đang chấm điểm...";
 
         const reader = new FileReader();
         reader.onload = async () => {
@@ -77,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
             function safeNumber(x) {
               return (typeof x === "number" && !isNaN(x)) ? x : 0;
             }
+
             if (features) {
               const rms = safeNumber(features.rms);
               const zcr = safeNumber(features.zcr);
@@ -98,9 +96,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const audio = new Audio(URL.createObjectURL(audioBlob));
-            transcriptBox.textContent = "🔁 Đang phát lại...";
+            transcriptBox.textContent = "🔊 Đang phát lại...";
+            replayIcon.className = "bi bi-volume-up";
             audio.play();
+
             audio.onended = () => {
+              replayIcon.className = "bi bi-arrow-repeat";
               transcriptBox.textContent = "";
             };
 
@@ -113,7 +114,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       mediaRecorder.start();
     } else {
-      isRecording = false;
       mediaRecorder.stop();
     }
   });
@@ -121,7 +121,13 @@ document.addEventListener("DOMContentLoaded", () => {
   replayBtn.addEventListener("click", () => {
     if (!audioBlob) return alert("Chưa có bản ghi.");
     const audio = new Audio(URL.createObjectURL(audioBlob));
+    transcriptBox.textContent = "🔊 Đang phát lại...";
+    replayIcon.className = "bi bi-volume-up";
     audio.play();
+    audio.onended = () => {
+      replayIcon.className = "bi bi-arrow-repeat";
+      transcriptBox.textContent = "";
+    };
   });
 
   saveBtn.addEventListener("click", () => {
