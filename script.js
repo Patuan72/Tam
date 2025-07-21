@@ -1,13 +1,9 @@
 
-let currentSentence = "";
 let mediaRecorder;
 let audioChunks = [];
 
-const startButton = document.getElementById("startButton");
-const scoreBox = document.getElementById("scoreBox");
-const sentenceBox = document.getElementById("sentenceBox");
 const micButton = document.getElementById("micButton");
-const replayButton = document.getElementById("replayButton");
+const scoreBox = document.querySelector(".score");
 
 micButton.addEventListener("click", async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -25,12 +21,10 @@ micButton.addEventListener("click", async () => {
         const arrayBuffer = await audioBlob.arrayBuffer();
         const audioContext = new AudioContext();
         const buffer = await audioContext.decodeAudioData(arrayBuffer);
-
         const channelData = buffer.getChannelData(0);
         const features = Meyda.extract(['rms', 'zcr', 'spectralFlatness'], channelData);
         if (!features) return;
         const { rms, zcr, spectralFlatness } = features;
-
         let score = 100;
         score -= Math.min(40, Math.max(0, (0.025 - rms) * 1600));
         score -= Math.max(0, (zcr - 0.2) * 150);
