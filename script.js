@@ -2,26 +2,6 @@ let recognition;
 
 
 document.addEventListener("DOMContentLoaded", () => {
-
-  const modeSelector = document.createElement("div");
-  modeSelector.style.marginTop = "8px";
-  modeSelector.innerHTML = `
-    <label style="margin-right:10px;">
-      <input type="radio" name="mode" value="audio" checked> 🎧 Chấm âm thanh
-    </label>
-    <label>
-      <input type="radio" name="mode" value="text"> 📖 Chấm nội dung
-    </label>
-  `;
-  document.querySelector("header").appendChild(modeSelector);
-
-  let currentMode = "audio";
-  modeSelector.querySelectorAll("input").forEach(input => {
-    input.addEventListener("change", e => {
-      currentMode = e.target.value;
-    });
-  });
-
   const micBtn = document.getElementById("mic");
   const replayBtn = document.getElementById("replay");
   const saveBtn = document.getElementById("save");
@@ -89,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
         audio.onended = () => {
           transcriptBox.textContent = "";
         };
-        if (currentMode === 'text') recognition.start();
+        recognition.start();
       };
 
       mediaRecorder.start();
@@ -132,8 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
         div.textContent = (i + 1) + ". " + sentence;
         div.className = "sentence-item";
         div.addEventListener("click", () => {
-          document.querySelectorAll(".sentence-item").forEach(el => el.classList.remove("selected"));
-          div.classList.add("selected");
           currentSentence = sentence;
           speakSentence(sentence);
         });
@@ -158,18 +136,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     recognition.onresult = event => {
       const transcript = event.results[0][0].transcript;
-      const transcriptSpan = document.createElement("div");
-      transcriptSpan.textContent = "🗣 " + transcript;
-      transcriptSpan.style.fontSize = "14px";
-      transcriptSpan.style.color = "#555";
-      transcriptSpan.style.marginTop = "4px";
-      const selectedItem = document.querySelector(".sentence-item.selected");
-      if (selectedItem) {
-        const oldTranscript = selectedItem.querySelector(".inline-transcript");
-        if (oldTranscript) selectedItem.removeChild(oldTranscript);
-        transcriptSpan.classList.add("inline-transcript");
-        selectedItem.appendChild(transcriptSpan);
-      }
+      transcriptBox.textContent = "🗣 " + transcript;
+      const score = compareSentences(currentSentence, transcript);
+      scoreBox.textContent = score;
     };
 
     recognition.onerror = e => {
