@@ -1,36 +1,47 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VPM</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/meyda/dist/web/meyda.min.js"></script>
 </head>
 <body>
   <header>
-    <div id="logo">VPM</div>
-    <div id="score">-</div>
-    <div class="speed-indicator">
-      <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+    <div class="logo">VPM</div>
+    <div class="score">85</div>
+    <div class="speed-selector">
+      <span class="dot selected">●</span>
+      <span class="dot">●</span>
+      <span class="dot">●</span>
     </div>
-    <div id="menu-icon">☰</div>
+    <div class="menu-icon" id="menuBtn">☰</div>
   </header>
 
   <main>
-    <ol id="sentence-list">
-      <li>Can you help me?</li>
-      <li>I don't understand.</li>
-      <li>Please say it again.</li>
-    </ol>
+    <div id="sentenceList"></div>
+    <div id="transcript" style="margin-top:10px; font-size:16px; color:#00796b;"></div>
   </main>
 
   <footer>
-    <button id="replay-button" disabled>🔁</button>
-    <button id="record-button">🎤</button>
-    <button id="save-button" disabled>💾</button>
+    <button class="icon" id="replay">🔁</button>
+    <button class="icon" id="mic">🎤</button>
+    <button class="icon" id="save">💾</button>
   </footer>
 
-  <script src="meyda.min.js"></script>
+  <div id="library" class="hidden">
+    <div class="library-content">
+      <button id="backBtn" class="back-btn">⬅️ Quay lại</button>
+      <h3>📚 Giáo trình</h3>
+      <ul id="downloadedList">
+        <li><a href="#" data-unit="unit1.json">Unit 1: Greetings</a></li>
+        <li><a href="#" data-unit="unit2.json">Unit 2: Asking for Help</a></li>
+      </ul>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
