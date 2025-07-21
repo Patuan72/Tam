@@ -37,6 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   micBtn.addEventListener("click", async () => {
+    if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+      alert('Trình duyệt không hỗ trợ nhận diện giọng nói.'); return;
+    }
     if (!currentSentence) {
       alert("Hãy chọn một câu trước khi ghi âm.");
       return;
@@ -64,9 +67,9 @@ document.addEventListener("DOMContentLoaded", () => {
         transcriptBox.textContent = "🔁 Đang phát lại...";
 
         audio.onended = () => {
-          transcriptBox.textContent = "🧠 Đang nhận diện...";
-          recognition.start();
+          transcriptBox.textContent = "";
         };
+        recognition.start();
       };
 
       mediaRecorder.start();
