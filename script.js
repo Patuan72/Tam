@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder = new MediaRecorder(stream);
       audioChunks = [];
-      transcriptBox.textContent = "🎙 Đang ghi âm... (bấm lại để dừng)";
+      
       isRecording = true;
 
       mediaRecorder.ondataavailable = e => {
@@ -91,13 +91,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const audio = new Audio(URL.createObjectURL(audioBlob));
         audio.play();
 
-        transcriptBox.textContent = "🔁 Đang phát lại...";
+        
 
         audio.onended = () => {
-          transcriptBox.textContent = "";
-          recognition.start();
+          
+          
         };
-        recognition.start();
+        
       };
 
       mediaRecorder.start();
@@ -158,27 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     speechSynthesis.speak(utterance);
   }
 
-  if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.interimResults = false;
-
-    recognition.onresult = event => {
-      const transcript = event.results[0][0].transcript;
-      const transcriptSpan = document.createElement("div");
-      transcriptSpan.textContent = "🗣 " + transcript;
-      transcriptSpan.style.fontSize = "14px";
-      transcriptSpan.style.color = "#555";
-      transcriptSpan.style.marginTop = "4px";
-      const selectedItem = document.querySelector(".sentence-item.selected");
-      if (selectedItem) {
-        const oldTranscript = selectedItem.querySelector(".inline-transcript");
-        if (oldTranscript) selectedItem.removeChild(oldTranscript);
-        transcriptSpan.classList.add("inline-transcript");
-        selectedItem.appendChild(transcriptSpan);
-      }
-    };
+  };
 
     recognition.onerror = e => {
       transcriptBox.textContent = "❌ Lỗi: " + e.error;
