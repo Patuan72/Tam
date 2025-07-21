@@ -1,64 +1,46 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Simple Speaking PWA</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; text-align: center; }
-    .sentence { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
-    .score { font-size: 24px; margin-top: 10px; color: green; }
-    .transcript { margin-top: 10px; font-style: italic; color: gray; }
-    button { font-size: 20px; padding: 10px 20px; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VPM</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="sentence">Hello, how are you?</div>
-  <button id="mic">🎤 Speak</button>
-  <div class="transcript"></div>
-  <div class="score">Score: --</div>
+  <header>
+    <div class="logo">VPM</div>
+    <div class="score">85</div>
+    <div class="speed-selector">
+      <span class="dot selected">●</span>
+      <span class="dot">●</span>
+      <span class="dot">●</span>
+    </div>
+    <div class="menu-icon" id="menuBtn">☰</div>
+  </header>
 
-  <script>
-    function compareSentences(expected, actual) {
-      const clean = str => str.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim();
-      const expectedWords = clean(expected).split(" ");
-      const actualWords = clean(actual).split(" ");
-      let match = 0;
-      expectedWords.forEach((word, i) => {
-        if (actualWords[i] && actualWords[i] === word) match++;
-      });
-      const score = Math.round((match / expectedWords.length) * 100);
-      return score;
-    }
+  <main>
+    <div id="sentenceList"></div>
+    <div id="transcript" style="margin-top:10px; font-size:16px; color:#00796b;"></div>
+  </main>
 
-    const micBtn = document.getElementById("mic");
-    const sentenceBox = document.querySelector(".sentence");
-    const transcriptBox = document.querySelector(".transcript");
-    const scoreBox = document.querySelector(".score");
+  <footer>
+    <button class="icon" id="replay">🔁</button>
+    <button class="icon" id="mic">🎤</button>
+    <button class="icon" id="save">💾</button>
+  </footer>
 
-    let recognition;
-    if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.lang = "en-US";
-      recognition.interimResults = false;
+  <div id="library" class="hidden">
+    <div class="library-content">
+      <button id="backBtn" class="back-btn">⬅️ Quay lại</button>
+      <h3>📚 Giáo trình</h3>
+      <ul id="downloadedList">
+        <li><a href="#" data-unit="unit1.json">Unit 1: Greetings</a></li>
+        <li><a href="#" data-unit="unit2.json">Unit 2: Asking for Help</a></li>
+      </ul>
+    </div>
+  </div>
 
-      recognition.onresult = event => {
-        const transcript = event.results[0][0].transcript;
-        transcriptBox.textContent = "You said: " + transcript;
-        const score = compareSentences(sentenceBox.textContent, transcript);
-        scoreBox.textContent = "Score: " + score;
-      };
-
-      recognition.onerror = e => {
-        transcriptBox.textContent = "❌ Error: " + e.error;
-      };
-    }
-
-    micBtn.onclick = () => {
-      transcriptBox.textContent = "Listening...";
-      recognition.start();
-    };
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
