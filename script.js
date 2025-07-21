@@ -75,13 +75,18 @@ document.addEventListener("DOMContentLoaded", () => {
           setTimeout(() => {
             const features = analyser.get();
             if (features) {
+              const rms = features.rms ?? 0;
+              const zcr = features.zcr ?? 0;
+              const flat = features.spectralFlatness ?? 0;
+              const centroid = features.spectralCentroid ?? 1000;
+              const mfcc = features.mfcc ?? [];
               let score = 0;
 
-              let rmsScore = Math.min(1, features.rms / 0.05) * 20;
-              let zcrScore = Math.max(0, 1 - features.zcr / 0.2) * 15;
-              let flatScore = Math.max(0, 1 - features.spectralFlatness / 0.5) * 15;
-              let centroidScore = (features.spectralCentroid > 200 && features.spectralCentroid < 2000) ? 20 : 10;
-              let mfccScore = features.mfcc ? 10 : 0;
+              let rmsScore = Math.min(1, rms / 0.05) * 20;
+              let zcrScore = Math.max(0, 1 - zcr / 0.2) * 15;
+              let flatScore = Math.max(0, 1 - flat / 0.5) * 15;
+              let centroidScore = (centroid > 200 && centroid < 2000) ? 20 : 10;
+              let mfccScore = mfcc.length > 0 ? 10 : 0;
 
               score = rmsScore + zcrScore + flatScore + centroidScore + mfccScore;
               scoreBox.textContent = Math.round(score);
