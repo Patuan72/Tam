@@ -147,12 +147,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function compareSentences(expected, actual) {
-    const expectedWords = clean(expected).split(" ");
-    const actualWords = clean(actual).split(" ");
-    let match = 0;
-    expectedWords.forEach((word, i) => {
-      if (actualWords[i] && actualWords[i] === word) match++;
-    });
-    return Math.round((match / expectedWords.length) * 100);
-  }
+  const expectedWords = clean(expected).split(" ");
+  const actualWords = clean(actual).split(" ");
+  let match = 0;
+
+  expectedWords.forEach((word, i) => {
+    if (actualWords[i] && actualWords[i] === word) match++;
+  });
+
+  const ratio = match / expectedWords.length;
+  let rawScore = Math.round(ratio * 100);
+
+  // Làm tròn xuống block 10 gần nhất, tối thiểu là 30
+  let roundedScore = Math.floor(rawScore / 10) * 10;
+  if (roundedScore < 30) roundedScore = 30;
+
+  return roundedScore;
 });
