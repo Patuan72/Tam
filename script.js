@@ -58,7 +58,7 @@ micBtn.addEventListener("click", async () => {
     const reader = new FileReader();
     reader.onload = () => {
       const arrayBuffer = reader.result;
-      voskWorker.postMessage({ command: "recognize", audio: arrayBuffer }, [arrayBuffer]);
+      voskWorker.postMessage({ command: "recognize", audio: arrayBuffer });
     };
     reader.readAsArrayBuffer(audioBlob);
   };
