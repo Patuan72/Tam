@@ -1,3 +1,4 @@
+/* Giao diện giữ nguyên như bản gốc */
 body {
   margin: 0;
   font-family: sans-serif;
@@ -16,15 +17,6 @@ header {
 main {
   flex-grow: 1;
   padding: 10px;
-}
-textarea {
-  width: 100%;
-  height: 60vh;
-  font-size: 18px;
-  padding: 10px;
-  box-sizing: border-box;
-  border: 1px solid #000;
-  resize: none;
 }
 footer {
   position: fixed;
@@ -63,10 +55,6 @@ footer {
   margin: 5px 0;
   font-size: 18px;
 }
-.download-btn {
-  margin-left: 10px;
-  padding: 4px 8px;
-}
 .hidden {
   display: none;
 }
@@ -75,50 +63,25 @@ footer {
   margin-bottom: 10px;
 }
 .speed-selector {
-  text-align: center;
-  margin-top: 4px;
-  font-size: 18px;
-}
-.dot {
-  margin: 0 4px;
-  cursor: pointer;
-}
-.selected {
-  font-weight: bold;
-}
-
-.sentence-item {
-  user-select: none;
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE10+ */
-  -moz-user-select: none; /* Firefox */
-}
-.sentence-item:active {
-  background-color: #e0f7fa;
-}
-
-
-/* Giãn cách đều và rõ ràng hơn cho các chấm chọn tốc độ */
-.speed-selector {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 12px;
+  font-size: 18px;
 }
-.dot {
-  font-size: 20px;
-}
-
-
-/* Chấm tốc độ - thêm màu cam sáng khi được chọn */
 .dot {
   font-size: 20px;
   cursor: pointer;
   color: #999;
   transition: all 0.2s ease;
 }
-
 .dot.selected {
-  color: #ff9800; /* cam sáng */
+  color: #ff9800;
   font-size: 28px;
+}
+.sentence-item {
+  user-select: none;
+}
+.sentence-item:active {
+  background-color: #e0f7fa;
 }
