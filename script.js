@@ -1,14 +1,12 @@
 
-import initVosk, { Model, KaldiRecognizer } from "https://cdn.jsdelivr.net/gh/alphacep/vosk-browser/dist/worker.js";
-
-let recognizer;
-let modelReady = false;
 let currentSentence = "";
 let currentRate = 1.0;
 let audioBlob = null;
 let mediaRecorder;
 let audioChunks = [];
 let isRecording = false;
+let worker;
+let modelReady = false;
 
 const micBtn = document.getElementById("mic");
 const replayBtn = document.getElementById("replay");
@@ -91,17 +89,11 @@ micBtn.addEventListener("click", async () => {
     const audio = new Audio(URL.createObjectURL(audioBlob));
     audio.play();
 
-    const arrayBuffer = await audioBlob.arrayBuffer();
-    const audioContext = new AudioContext({ sampleRate: 16000 });
-    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    const monoData = audioBuffer.getChannelData(0);
-
-    recognizer.acceptWaveform(monoData);
-    const result = recognizer.result();
-    const transcript = result.text || "(no result)";
-    transcriptBox.textContent = "🗣 " + transcript;
-    const score = compareSentences(currentSentence, transcript);
-    scoreBox.textContent = score;
+    const reader = new FileReader();
+    reader.onload = () => {
+      worker.postMessage({ command: "process", buffer: reader.result });
+    };
+    reader.readAsArrayBuffer(audioBlob);
   };
 
   mediaRecorder.start();
@@ -123,10 +115,18 @@ saveBtn.addEventListener("click", () => {
   a.click();
 });
 
-(async () => {
-  const vosk = await initVosk();
-  const model = new vosk.Model("https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip");
-  await model.init();
-  recognizer = new vosk.KaldiRecognizer(model, 16000);
-  modelReady = true;
-})();
+// Init worker
+worker = new Worker("vosk-worker.js");
+worker.postMessage({ command: "init", modelUrl: "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip" });
+
+worker.onmessage = function (event) {
+  if (event.data.status === "ready") {
+    modelReady = true;
+    console.log("Vosk model ready");
+  } else if (event.data.text) {
+    const transcript = event.data.text;
+    transcriptBox.textContent = "🗣 " + transcript;
+    const score = compareSentences(currentSentence, transcript);
+    scoreBox.textContent = score;
+  }
+};
