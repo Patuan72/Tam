@@ -54,42 +54,53 @@ document.addEventListener("DOMContentLoaded", () => {
       mediaRecorder.onstop = () => {
         const audioBlobTemp = new Blob(audioChunks, { type: "audio/wav" });
         audioBlob = audioBlobTemp;
-        const context = new AudioContext();
+        transcriptBox.textContent = "⏳ Đang chấm điểm...";
+
         const reader = new FileReader();
         reader.onload = async () => {
-          const buffer = await context.decodeAudioData(reader.result);
-          const source = context.createBufferSource();
-          source.buffer = buffer;
+          const audioContext = new AudioContext();
+          const buffer = await audioContext.decodeAudioData(reader.result);
+          const offlineSource = audioContext.createBufferSource();
+          offlineSource.buffer = buffer;
+
           const analyser = Meyda.createMeydaAnalyzer({
-            audioContext: context,
-            source: source,
-            bufferSize: 512,
-            featureExtractors: ['rms', 'zcr', 'spectralFlatness'],
-            callback: features => {
-              const { rms, zcr, spectralFlatness } = features;
-              let score = 100;
-              if (rms < 0.02) score -= 40;
-              if (zcr > 0.2) score -= 30;
-              if (spectralFlatness > 0.5) score -= 30;
-              scoreBox.textContent = Math.max(0, Math.round(score));
-            }
+            audioContext: audioContext,
+            source: offlineSource,
+            bufferSize: 1024,
+            featureExtractors: ['rms', 'zcr', 'spectralFlatness', 'spectralCentroid', 'mfcc']
           });
-          source.connect(context.destination);
-          analyser.start();
-          source.start();
+
+          offlineSource.connect(audioContext.destination);
+
+          setTimeout(() => {
+            const features = analyser.get();
+            if (features) {
+              let score = 0;
+
+              let rmsScore = Math.min(1, features.rms / 0.05) * 20;
+              let zcrScore = Math.max(0, 1 - features.zcr / 0.2) * 15;
+              let flatScore = Math.max(0, 1 - features.spectralFlatness / 0.5) * 15;
+              let centroidScore = (features.spectralCentroid > 200 && features.spectralCentroid < 2000) ? 20 : 10;
+              let mfccScore = features.mfcc ? 10 : 0;
+
+              score = rmsScore + zcrScore + flatScore + centroidScore + mfccScore;
+              scoreBox.textContent = Math.round(score);
+            } else {
+              scoreBox.textContent = "0";
+            }
+
+            const audio = new Audio(URL.createObjectURL(audioBlob));
+            transcriptBox.textContent = "🔁 Đang phát lại...";
+            audio.play();
+            audio.onended = () => {
+              transcriptBox.textContent = "";
+            };
+
+            stream.getTracks().forEach(track => track.stop());
+          }, 1000);
         };
+
         reader.readAsArrayBuffer(audioBlob);
-
-        stream.getTracks().forEach(track => track.stop());
-
-        const audio = new Audio(URL.createObjectURL(audioBlob));
-        audio.play();
-
-        transcriptBox.textContent = "🔁 Đang phát lại...";
-
-        audio.onended = () => {
-          transcriptBox.textContent = "";
-        };
       };
 
       mediaRecorder.start();
