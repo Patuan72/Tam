@@ -74,12 +74,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
           setTimeout(() => {
             const features = analyser.get();
+            function safeNumber(x) {
+              return (typeof x === "number" && !isNaN(x)) ? x : 0;
+            }
             if (features) {
-              const rms = features.rms ?? 0;
-              const zcr = features.zcr ?? 0;
-              const flat = features.spectralFlatness ?? 0;
-              const centroid = features.spectralCentroid ?? 1000;
-              const mfcc = features.mfcc ?? [];
+              const rms = safeNumber(features.rms);
+              const zcr = safeNumber(features.zcr);
+              const flat = safeNumber(features.spectralFlatness);
+              const centroid = safeNumber(features.spectralCentroid);
+              const mfcc = Array.isArray(features.mfcc) ? features.mfcc : [];
               let score = 0;
 
               let rmsScore = Math.min(1, rms / 0.05) * 20;
